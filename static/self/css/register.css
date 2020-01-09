@@ -1,0 +1,83 @@
+
+@charset "UTF-8";
+html
+{
+	overflow:visible
+}
+
+body,html
+{
+	height:100%
+}
+body
+{
+	background:#F7F6F2
+}
+
+.register
+{
+	z-index:1001;
+	width:450px;
+	margin-top: 3%;
+	margin-left:auto;
+	margin-right:auto;
+	padding:30px 40px 40px;
+	border-radius:10px;
+	background-color:#fff;
+}
+.register h2
+{
+	margin:0 0 25px;
+	font-size:25px;
+	font-weight:400;
+	text-align:center;
+	color:#323a45
+}
+.register .account-input
+{
+	position:relative;
+	height: auto;
+}
+.register .account-input input
+{
+	height:48px;
+	width:370px;
+	padding-left:15px;
+	padding-right:15px;
+	margin-bottom:15px;
+	font-size:16px;
+	border:1px solid rgba(50,58,69,.2);
+	border-radius:5px
+}
+
+.register .account-input input:focus
+{
+	outline:0;
+	border-color:#499dd6
+}
+
+.register .account-input label{
+	color: #BD362F;
+}
+
+.register button
+{
+	width:370px;
+	height:48px;
+	border:none;
+	background-color:#323a45;
+	color:#fff;
+	font-size:24px;
+	border-radius:24px;
+	cursor:pointer;
+	transition:opacity .2s ease
+}
+.register button:focus
+{
+	outline:0
+}
+.register button:hover
+{
+	background-color:#499dd6;
+}
+

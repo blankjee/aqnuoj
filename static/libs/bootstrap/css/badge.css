@@ -1,0 +1,41 @@
+/*    Font Variable
+----------------------*/
+/*    Color Variable
+-----------------------*/
+/*    Solid Color
+------------------*/
+/*    Brand color
+----------------------*/
+.badge {
+  padding: 5px 10px;
+  font-weight: 400;
+  border-radius: 4px;
+}
+.badge-primary {
+  background: #03a9f5;
+  color: #ffffff;
+}
+.badge-success {
+  background: #1de9b6;
+  color: #ffffff;
+}
+.badge-info {
+  background: #03a9f4;
+  color: #ffffff;
+}
+.badge-warning {
+  background: #f39c12;
+  color: #ffffff;
+}
+.badge-danger {
+  background: #e74c3c;
+  color: #ffffff;
+}
+.badge-pink {
+  background: #e6a1f2;
+  color: #ffffff;
+}
+.badge-dark {
+  background: #545454;
+  color: #ffffff;
+}

@@ -1,0 +1,419 @@
+<?php
+
+require_once('../includes/config.inc.php');
+require_once("../includes/my_func.inc.php");
+
+isLogined();
+require_once('../includes/memcache.php');
+
+$user_id = $_SESSION[$OJ_NAME . '_' . 'user_id'];
+$isAdmin = isAdministorRB();
+
+$problem_id = 1000;   //初始化一个问题ID
+
+/*两种类型，一种是直接练习的，一种是在竞赛&作业中做的题*/
+$is_practice = true;    //默认是练习题
+if (isset($_GET['id'])) {
+    $id = intval($_GET['id']);
+    //$sample_sql = "select sample_input, sample_output, problem_id from problem where problem_id=?";
+} else if (isset($_GET['cid']) && isset($_GET['pid'])) {
+    $is_practice = false;
+    $cid = intval($_GET['cid']);
+    $pid = intval($_GET['pid']);
+    $psql = "select problem_id from contest_problem where contest_id=? and num=?";
+    $data = pdo_query($psql, $cid, $pid);
+    $row = $data[0];
+    $problem_id = $row[0];
+
+    //$sample_sql="SELECT p.sample_input, p.sample_output, p.problem_id FROM problem p where problem_id =  ? ";
+} else if (!isset($_GET['sid'])) {
+    $view_errors = "<h2>无此题目！</h2>";
+    exit(0);
+}
+
+/*查看自己提交的代码*/
+$view_src = "";
+$ok = false;
+if (isset($_GET['sid'])) {
+    $sid = intval($_GET['sid']);
+    $sql = "SELECT * FROM `solution` WHERE `solution_id`=? AND `result`=4";
+    $result = pdo_query($sql, $sid);
+    if (empty($result)){
+	$row =false;
+    }else{
+	$row = $result[0];
+    }
+    if ($row && $row['user_id'] == $user_id) $ok = true;
+//    if (isset($_SESSION[$OJ_NAME . '_' . 'source_browser'])) {
+//        $ok = true;
+//    } else {
+//        /*考试期间查看代码的问题*/
+//        if (isset($OJ_EXAM_CONTEST_ID)) {
+//            if ($cid < $OJ_EXAM_CONTEST_ID && !isset($_SESSION[$OJ_NAME . '_' . 'source_browser'])) {
+//                header("Content-type: text/html; charset=utf-8");
+//                echo $MSG_SOURCE_NOT_ALLOWED_FOR_EXAM;
+//                exit();
+//            }
+//        }
+//        $ok = true;
+//    }
+
+
+
+    if ($ok == true) {
+        $sql = "SELECT source FROM source_code_user WHERE solution_id=?";
+        $result = pdo_query($sql, $sid);
+        $row = $result[0];
+        if ($row)
+            $view_src = $row['source'];
+    }else {
+      // echo "<script>alert('抱歉，您不能查看此题提交的代码！');window.history.go(-1);;</script>";
+	$view_src = "";
+    }
+
+
+}
+
+
+//$sql = "SELECT count(1) FROM solution WHERE result<4";
+//$result = mysql_query_cache($sql);
+//$row = $result[0];
+//if ($row[0] > 10) {     //如果提交列表中已有超过10条未判solution记录，那么就开启验证。
+//    $OJ_VCODE = true;
+//}
+$letter = 65;	//表示字母A
+
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+
+    <title>问题提交</title>
+
+    <link type="text/css" rel="stylesheet" href="../static/libs/bootstrap/css/bootstrap.min.css"/>
+    <script language="javascript" type="text/javascript" src="../static/libs/jquery/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../static/libs/bootstrap/js/bootstrap.min.js"></script>
+
+    <!--IE -->
+    <script language="javascript" type="text/javascript" src="../static/self/js/html5shiv.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../static/self/js/respond.min.js"></script>
+    <!--IE-->
+    <link type="text/css" rel="stylesheet" href="../static/self/css/home.css"/>
+    <link type="text/css" rel="stylesheet" href="../static/self/css/base.css"/>
+    <script language="javascript" src="../static/self/js/nowtime.js"></script>
+ <script language="javascript" src="../includes/baidu_analysis.js"></script>
+
+</head>
+<body>
+<div class="everything">
+
+    <!-- Header START -->
+    <?php include('partials/header.php'); ?>
+    <!-- Header END -->
+
+
+    <div class="main">
+
+        <div class="container">
+            <div class="block block-success"></div>
+            <div class="block-content">
+                <div class="block-container form-horizontal">
+                    <form id="frmSolution" action="submit.php" method="post">
+                        <div class="form-group form-group-sm">
+                        <?php
+                        if ($is_practice){?>
+                            <label class="col-sm-2 control-label">问题ID</label>
+                            <div class="col-sm-10 form-inline">
+                                <input id="problem_id" readonly class="form-control" type="text" name="id" value="<?php echo $is_practice === true ? $id : $pid; ?>"
+                                               class="form-control"/>
+                            </div>
+                        <?php }else {?>
+                            <label class="col-sm-2 control-label">竞赛ID</label>
+                            <div class="col-sm-10 form-inline">
+                                <input id="cid" readonly class="form-control" type="text" name="cid" value="<?php echo $cid; ?>"
+                                               class="form-control"/>
+                            </div>
+                            <label class="col-sm-2 control-label">问题序号</label>
+                            <div class="col-sm-10 form-inline">
+                                 <input id="pid" hidden name="pid" value="<?php echo $pid; ?>"/>
+
+				<input id="" readonly class="form-control" type="text" name="" value="<?php echo 'Problem '.chr($letter + $pid); ?>"
+                                       class="form-control"/>
+                            </div>
+                        <?php }
+                        ?>
+
+                        </div>
+                        <div class="form-group form-group-sm">
+                            <label class="col-sm-2 control-label">语言</label>
+                            <div class="col-sm-10 form-inline">
+                                <select id="language" name="language" class="form-control input-sm">
+                                    <option value="0">
+                                        C
+                                    </option><option value="1" selected="true">
+                                        C++
+                                    </option><option value="2">
+                                        Pascal
+                                    </option><option value="3">
+                                        Java
+                                    </option><option value="6">
+                                        Python
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">源代码</label>
+                            <div class="col-sm-7">
+ <textarea id="source" name="source" rows="25" class="form-control"><?php echo $view_src;?></textarea>
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-7">
+                                <input id="Submit" class="btn btn-primary btn-bg" type=button value="提交" onclick="do_submit();" />
+				<?php if($isAdmin == true) {?><input id="TestRun" class="btn btn-info btn-bg" type=button value="测试运行" data-trigger="hover" title="提示" data-container="body" data-toggle="popover" data-placement="top" data-content="各位老师，此功能用于管理员测试问题是否到达预期效果，建议仅在出题阶段进行测试使用。此按钮仅管理员可见。" onclick="do_test_run();" /><?php }?>
+				<span class="btn" id="result"></span>                               
+				<button type="reset" class="btn btn-bg">清空</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <!-- Footer START -->
+    <?php include('partials/footer.php'); ?>
+    <!-- Footer END -->
+</div>
+<script>
+	$(function () { 
+		$("[data-toggle='popover']").popover();
+	});
+</script>
+
+<script>
+    var sid = 0;
+    var judge_result = ['等待','等待重判','编译中','运行并评判','正确','格式错误','答案错误','时间超限','内存超限','输出超限','运行错误','编译错误','编译成功','运行完成',''];
+
+    function print_result(solution_id) {
+        sid = solution_id;
+        $("#out").load("status-ajax.php?tr=1&solution_id=" + solution_id);
+    }
+
+    function fresh_result(solution_id) {
+        var tb = window.document.getElementById('result');
+        if (solution_id == undefined) {
+            tb.innerHTML = "Vcode Error!";
+            if ($("#vcode") != null) $("#vcode").click();
+            return;
+        }
+        sid = solution_id;
+        var xmlhttp;
+        if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp = new XMLHttpRequest();
+        } else {// code for IE6, IE5
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                var r = xmlhttp.responseText;
+                var ra = r.split(",");
+                // alert(r);
+                // alert(judge_result[r]);
+                var loader = "<img width=18 src=/static/img/loader.gif>";
+                var tag = "span";
+                if (ra[0] < 4) tag = "span disabled=true";
+                else tag = "a";
+                {
+                    if (ra[0] == 11)
+
+                        tb.innerHTML = "<" + tag + " href='ceinfo.php?sid=" + solution_id + "' class='badge badge-info' target=_blank>" + judge_result[ra[0]] + "</" + tag + ">";
+                    else
+                        tb.innerHTML = "<" + tag + " href='reinfo.php?sid=" + solution_id + "' class='badge badge-info' target=_blank>" + judge_result[ra[0]] + "</" + tag + ">";
+                }
+                if (ra[0] < 4) tb.innerHTML += loader;
+                //tb.innerHTML += "[Memory:" + ra[1] + "kb&nbsp;&nbsp;";
+                //tb.innerHTML += "Time:" + ra[2] + "ms]";
+                if (ra[0] < 4)
+                    window.setTimeout("fresh_result(" + solution_id + ")", 2000);
+                else {
+                    window.setTimeout("print_result(" + solution_id + ")", 2000);
+                    count = 1;
+                }
+            }
+        }
+        xmlhttp.open("GET", "status-ajax.php?solution_id=" + solution_id, true);
+        xmlhttp.send();
+    }
+
+    function getSID() {
+        var ofrm1 = document.getElementById("testRun").document;
+        var ret = "0";
+        if (ofrm1 == undefined) {
+            ofrm1 = document.getElementById("testRun").contentWindow.document;
+            var ff = ofrm1;
+            ret = ff.innerHTML;
+        } else {
+            var ie = document.frames["frame1"].document;
+            ret = ie.innerText;
+        }
+        return ret + "";
+    }
+
+    var count = 0;
+
+    /*提交前的准备工作*/
+    function encoded_submit() {
+        //存放问题ID的元素ID获取
+        var mark = "<?php echo isset($id) === true ? 'problem_id' : 'cid';?>";
+        //var mark = "problem_id"; //暂时假设只有练习提交过来的
+        var problem_id = document.getElementById(mark);
+
+        if (typeof (editor) != "undefined")
+            $("#hide_source").val(editor.getValue());
+        if (mark == 'problem_id')
+            problem_id.value = '<?php if (isset($id)) echo $id?>';
+        else
+            problem_id.value = '<?php if (isset($cid)) echo $cid?>';
+
+        document.getElementById("frmSolution").target = "_self";
+        document.getElementById("encoded_submit_mark").name = "encoded_submit";
+        var source = $("#source").val();
+        if (typeof (editor) != "undefined") {
+            source = editor.getValue();
+            $("#hide_source").val(encode64(utf16to8(source)));
+        } else {
+            $("#source").val(encode64(utf16to8(source)));
+        }
+//      source.value=source.value.split("").reverse().join("");
+//      alert(source.value);
+        document.getElementById("frmSolution").submit();
+    }
+
+    function do_submit() {
+	
+        if (typeof (editor) != "undefined") {
+            $("#hide_source").val(editor.getValue());
+        }
+        var mark = "<?php echo isset($id) ? 'problem_id' : 'cid';?>";
+
+        var problem_id = document.getElementById(mark);
+
+
+        if (mark == 'problem_id')
+            problem_id.value = '<?php if (isset($id)) echo $id?>';
+        else
+            problem_id.value = '<?php if (isset($cid)) echo $cid?>';
+
+        //alert(problem_id.value);
+        document.getElementById("frmSolution").target = "_self";
+        document.getElementById("frmSolution").submit();
+    }
+
+    var handler_interval;
+
+    function do_test_run() {
+        if (handler_interval) window.clearInterval(handler_interval);
+	var loader = "<img width=18 src=/static/img/loader.gif>";
+        var tb = window.document.getElementById('result');
+        var source = $("#source").val();
+        if (typeof (editor) != "undefined") {
+            source = editor.getValue();
+            $("#hide_source").val(source);
+        }
+        if (source.length < 10) return alert("代码太短！");
+	if (tb != null) tb.innerHTML = loader;
+        var mark = "<?php echo isset($id) ? 'problem_id' : 'cid';?>";
+        var problem_id = document.getElementById(mark);
+        problem_id.value = -problem_id.value;
+        document.getElementById("frmSolution").target = "testRun";
+        //$("#hide_source").val(editor.getValue());
+        //document.getElementById("frmSolution").submit();
+        $.post("submit.php?ajax", $("#frmSolution").serialize(), function (data) {
+            fresh_result(data);
+        });
+        $("#Submit").prop('disabled', true);
+        $("#TestRub").prop('disabled', true);
+        problem_id.value = -problem_id.value;
+        count = 20;
+        handler_interval = window.setTimeout("resume();", 1000);
+    }
+
+    function resume() {
+        count--;
+        var s = $("#Submit")[0];
+        var t = $("#TestRub")[0];
+        if (count < 0) {
+            s.disabled = false;
+            if (t != null) t.disabled = false;
+            s.value = "提交";
+            if (t != null) t.value = "测试运行";
+            if (handler_interval) window.clearInterval(handler_interval);
+            if ($("#vcode") != null) $("#vcode").click();
+        } else {
+            s.value = "提交(" + count + ")";
+            if (t != null) t.value = "测试运行(" + count + ")";
+            window.setTimeout("resume();", 1000);
+        }
+    }
+
+    function switchLang(lang) {
+        var langnames = new Array("c_cpp", "c_cpp", "pascal", "java", "ruby", "sh", "python", "php", "perl", "csharp", "objectivec", "vbscript", "scheme", "c_cpp", "c_cpp", "lua", "javascript", "golang");
+        editor.getSession().setMode("ace/mode/" + langnames[lang]);
+
+    }
+
+    function reloadtemplate(lang) {
+        console.log("lang=" + lang);
+        document.cookie = "lastlang=" + lang.value;
+        //alert(document.cookie);
+        var url = window.location.href;
+        var i = url.indexOf("sid=");
+        if (i != -1) url = url.substring(0, i - 1);
+
+        switchLang(lang);
+    }
+
+    function openBlockly() {
+        $("#frame_source").hide();
+        $("#TestRun").hide();
+        $("#language")[0].scrollIntoView();
+        $("#language").val(6).hide();
+        $("#language_span").hide();
+        $("#EditAreaArroundInfos_source").hide();
+        $('#blockly').html('<iframe name=\'frmBlockly\' width=90% height=580 src=\'blockly/demos/code/index.html\'></iframe>');
+        $("#blockly_loader").hide();
+        $("#transrun").show();
+        $("#Submit").prop('disabled', true);
+        using_blockly = true;
+
+    }
+
+    function translate() {
+        var blockly = $(window.frames['frmBlockly'].document);
+        var tb = blockly.find('td[id=tab_python]');
+        var python = blockly.find('pre[id=content_python]');
+        tb.click();
+        blockly.find('td[id=tab_blocks]').click();
+        if (typeof (editor) != "undefined") editor.setValue(python.text());
+        else $("#source").val(python.text());
+        $("#language").val(6);
+
+    }
+
+    function loadFromBlockly() {
+        translate();
+        do_test_run();
+        $("#frame_source").hide();
+//  $("#Submit").prop('disabled', false);
+    }
+</script>
+
+</body>
+</html>

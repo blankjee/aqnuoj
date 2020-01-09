@@ -1,0 +1,57 @@
+
+/*.banner{*/
+    /*height:146px;*/
+    /*background-color:#CFF0FF;*/
+/*}*/
+
+.footer{
+    color:#555;
+    background-color:#D3D3D3;
+    height:100px;
+    padding-top:30px;
+}
+
+.search{
+    position:fixed;
+    right:50px;
+    bottom:150px;
+}
+.btn-custom {
+height:60px;
+width:60px;
+color: #FFFFFF;
+background-color: #7bae23;
+    /*background-color: #aaaaaa;*/
+padding: 6px 10px;
+}
+
+.btn-custom:hover{
+background-color:#9AC94B;
+    /*background-color:#b1b1b1;*/
+
+}
+
+.custom-glyph-color{
+    color:#fff;
+}
+
+.custom-glyph-color:hover{
+    color:#b1b1b1;
+}
+
+.text{
+    color:black;
+    font-family:华文细黑;
+    padding-left:60px;
+    font-size:20px;
+}
+.welcome{
+    background-color: #00b8d8;
+    /*background-color: #4caf50;*/
+    border-radius:10px 10px 10px 10px;
+    color: white;
+}
+
+.welcome p{
+    color: white;
+}
