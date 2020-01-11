@@ -6,7 +6,7 @@
  * Time: 13:42
  */
 header("Content-Type: text/html; charset=UTF-8");
-include "../../includes/phpword/PHPWord.php";
+include "../../includes/PHPWord/PHPWord.php";
 require_once '../../includes/PHPWord/PHPWord/IOFactory.php';
 
 require_once("../../includes/config.inc.php");
