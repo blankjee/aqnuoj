@@ -67,6 +67,7 @@
                     <ul>
                         <li><a href="contestlist.php">竞赛&作业列表</a></li>
                         <li><a href="addcontest.php">添加竞赛&作业</a></li>
+                        <li><a href="exportstucode.php">导出竞赛学生代码</a></li>
 <!--                        <li><a href="contestcreator.php">比赛队伍账号生成器</a></li>-->
                     </ul>
                 </li>

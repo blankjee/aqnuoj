@@ -14,8 +14,8 @@ function pdo_query($sql){
     global $DB_HOST, $DB_NAME, $DB_USER, $DB_PASS, $dbh;
 
     static 	$DB_HOST="localhost";
-    static 	$DB_NAME="";
-    static 	$DB_USER="";
+    static 	$DB_NAME="aqnuoj";
+    static 	$DB_USER="root";
     static 	$DB_PASS="";
 
     if(!$dbh){
