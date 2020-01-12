@@ -42,9 +42,11 @@ $fileNameArr = array();
 $sql = "select solution_id, result, user_id, num, pass_rate, in_date, judgetime from solution where contest_id = ? order by user_id asc ";
 $result = pdo_query($sql, $contest_id);
 $user = "-999999999";     //定义一个不存在的用户名
+$empty = true;
 foreach ($result as $row){
     if ($user != $row['user_id']){
         if ($user != "-999999999"){
+            $empty = false;
             //$section->addText($content);
             // Save File
             $fileName = $user . "-contest-code.docx";
@@ -123,13 +125,22 @@ foreach ($result as $row){
 
 }
 
+//还有最后一个文件需要生成docx
+if ($empty == false){
+    $fileName = $user . "-contest-code.docx";
+    //把文件地址添加到fileNameArr中便于打包下载
+    array_push($fileNameArr, $dir . '/' . $fileName);
+    $objWriter = PHPWord_IOFactory::createWriter($PHPWord, 'Word2007');
+    create_folders($dir);
+    $objWriter->save($dir . '/' . $fileName);
+}
+
 $filename = "./" . $contest_id . "-student-code-" .date ( 'YmdH' ) . ".zip"; // 最终生成的文件名（含路径）
 // 生成文件
 $zip = new ZipArchive (); // 使用本类，linux需开启zlib，windows需取消php_zip.dll前的注释
 if ($zip->open ( $filename, ZIPARCHIVE::CREATE ) !== TRUE) {
     exit ( '无法打开文件，或者文件创建失败' );
 }
-
 //$fileNameArr 就是一个存储文件路径的数组 比如 array('/a/1.jpg,/a/2.jpg....');
 foreach ( $fileNameArr as $val ) {
     //var_dump($val);
@@ -144,6 +155,7 @@ header ( 'Content-disposition: attachment; filename=' . basename ( $filename ) )
 header ( "Content-Type: application/zip" ); // zip格式的
 header ( "Content-Transfer-Encoding: binary" ); // 告诉浏览器，这是二进制文件
 header ( 'Content-Length: ' . filesize ( $filename ) ); // 告诉浏览器，文件大小
-@readfile ( $filename );//输出文件;
+
+@readfile ( $dir . '/' . $filename );//输出文件;
 
 ?>
