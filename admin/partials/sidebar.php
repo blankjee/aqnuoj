@@ -6,11 +6,15 @@
     $url = substr($url,0,strrpos($url,'.'));
 
     $normal = false;        //常规栏
+    $user_mg = false;       //用户管理
     $problem_mg = false;    //问题管理
     $conetst_mg = false;    //作业管理
 
-    if ($url == 'setindexmsg' || $url == 'newslist' || $url == 'addnews' || $url == 'privilegelist' || $url == 'addprivilege' || $url == 'importstudent'){
+    if ($url == 'setindexmsg' || $url == 'newslist' || $url == 'addnews'){
         $normal = true;
+    }
+    if ($url == 'userlist' || $url == 'privilegelist' || $url == 'addprivilege' || $url == 'importstudent'){
+        $user_mg = true;
     }
     if ($url == 'problemlist' || $url == 'addproblem' || $url == 'importproblem' || $url == 'exportproblem'){
         $problem_mg = true;
@@ -35,12 +39,22 @@
                         <li><a href="setindexmsg.php">首页公告</a></li>
                         <li><a href="newslist.php">公告列表</a></li>
                         <li><a href="addnews.php">添加公告</a></li>
-                        <li><a href="userlist.php">用户列表</a></li>
-			<li><a href="importstudent.php">导入用户</a></li>
-                        <li><a href="privilegelist.php">权限列表</a></li>
-                        <li><a href="addprivilege.php">添加权限</a></li>
                     </ul>
                 </li>
+                <?php
+                if ($user_mg == true){?>
+                <li class="active open"><a class="sidebar-sub-toggle"><i class="ti-user"></i>用户管理  <span class="sidebar-collapse-icon ti-angle-down"></span></a>
+                <?php }else{?>
+                    <li><a class="sidebar-sub-toggle"><i class="ti-user"></i>用户管理  <span class="sidebar-collapse-icon ti-angle-down"></span></a>
+                        <?php }?>
+                        <ul>
+                            <li><a href="userlist.php">用户列表</a></li>
+                            <li><a href="importstudent.php">导入用户</a></li>
+                            <li><a href="privilegelist.php">权限列表</a></li>
+                            <li><a href="addprivilege.php">添加权限</a></li>
+
+                        </ul>
+                    </li>
 
                 <?php
                 if ($problem_mg == true){?>
@@ -51,7 +65,7 @@
                     <ul>
                         <li><a href="problemlist.php">问题列表</a></li>
                         <li><a href="addproblem.php">添加问题</a></li>
-                        <li><a href="importproblem.php">导入</a></li>
+                        <li><a href="importproblem.php">批量导入问题</a></li>
                         
                     </ul>
                 </li>
