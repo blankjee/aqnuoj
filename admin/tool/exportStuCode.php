@@ -135,7 +135,7 @@ if ($empty == false){
     $objWriter->save($dir . '/' . $fileName);
 }
 
-$filename = "./" . $contest_id . "-student-code-" .date ( 'YmdH' ) . ".zip"; // 最终生成的文件名（含路径）
+$filename = $dir . "/" . $contest_id . "-student-code-" .date ( 'YmdH' ) . ".zip"; // 最终生成的文件名（含路径）
 // 生成文件
 $zip = new ZipArchive (); // 使用本类，linux需开启zlib，windows需取消php_zip.dll前的注释
 if ($zip->open ( $filename, ZIPARCHIVE::CREATE ) !== TRUE) {
@@ -156,6 +156,12 @@ header ( "Content-Type: application/zip" ); // zip格式的
 header ( "Content-Transfer-Encoding: binary" ); // 告诉浏览器，这是二进制文件
 header ( 'Content-Length: ' . filesize ( $filename ) ); // 告诉浏览器，文件大小
 
-@readfile ( $dir . '/' . $filename );//输出文件;
+//刷新一下
+ob_clean();
+flush();
+//输出文件;
+@readfile (  $filename );
+//删除压缩文件
+unlink( $fileName );
 
 ?>
