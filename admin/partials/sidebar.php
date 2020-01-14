@@ -19,7 +19,7 @@
     if ($url == 'problemlist' || $url == 'addproblem' || $url == 'importproblem' || $url == 'exportproblem'){
         $problem_mg = true;
     }
-    if ($url == 'contestlist' || $url == 'addcontest' || $url == 'contestcreator'){
+    if ($url == 'contestlist' || $url == 'addcontest' || $url == 'contestcreator' || $url == 'exportstucode'){
         $conetst_mg = true;
     }
 ?>
