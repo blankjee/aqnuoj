@@ -41,6 +41,7 @@ tar -zxvf web.tar.gz
 1. 主页
 
    ![]([https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/%E4%B8%BB%E9%A1%B5.png](https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/主页.png))
+   !(https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/主页.png)
 
 2. 公告
 
