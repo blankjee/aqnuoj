@@ -40,24 +40,23 @@ tar -zxvf web.tar.gz
 
 1. 主页
 
-   ![]([https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/%E4%B8%BB%E9%A1%B5.png](https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/主页.png))
-   !(https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/主页.png)
+   ![](https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/主页.png?raw=true)
 
 2. 公告
 
-   ![]([https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/%E5%85%AC%E5%91%8A.png](https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/公告.png))
+   ![](https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/%E5%85%AC%E5%91%8A.png)
 
 3. 状态
 
-   ![]([https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/%E7%8A%B6%E6%80%81.png](https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/状态.png))
+   ![](https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/状态.png)
 
 4. 后台-公告页管理
 
-   ![]([https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/%E5%90%8E%E5%8F%B0-%E5%85%AC%E5%91%8A%E9%A1%B5.png](https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/后台-公告页.png))
+   ![](https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/后台-公告页.png)
 
 5. 后台-问题管理
 
-   ![]([https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/%E5%90%8E%E5%8F%B0-%E9%97%AE%E9%A2%98%E7%AE%A1%E7%90%86.png](https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/后台-问题管理.png))
+   ![](https://github.com/HUANGoJIE/aqnuoj/blob/dev/gitimg/后台-问题管理.png)
 
 ### 浏览器支持
 
