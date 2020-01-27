@@ -1,4 +1,6 @@
-
+<?php
+$rightstatus = getAuth();
+?>
 <div class="header">
     <div class="pull-left">
         <div class="logo"><a href="/admin"><!-- <img src="assets/images/logo.png" alt="" /> --><span>AQNUOJ 后台管理系统</span></a></div>
@@ -16,7 +18,12 @@
                 <div class="drop-down dropdown-profile">
                     <div class="dropdown-content-heading">
                             <span class="text-left">你的当前身份：
-                                <span class="trial-day">管理员</span>
+                                <span class="trial-day">
+                                    <?php
+                                    foreach ($rightstatus as $right){
+                                        if ($right[1]) echo "<ul style='margin: 5px'>" . $right[2] . "</ul>";
+                                    }?>
+                                </span>
                            </span>
                     </div>
                     <div class="dropdown-content-body">

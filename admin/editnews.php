@@ -4,6 +4,7 @@ require_once("../includes/my_func.inc.php");
 
 isLogined();
 isAdministor();
+authPageContr();
     if (isset($_GET['id'])){
         $id = $_GET['id'];
         $sql = "SELECT * FROM news WHERE news_id = '$id'";

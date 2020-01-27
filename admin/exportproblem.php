@@ -4,6 +4,7 @@ require_once("../includes/my_func.inc.php");
 
 isLogined();
 isAdministor();
+authPageContr();
 
     $sql = "SELECT user_id, nick, school, email, create_time FROM users ORDER BY 'reg_time' DESC";
     $result = pdo_query($sql);

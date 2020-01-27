@@ -1,11 +1,31 @@
 <?php
+
+/**
+ * 权限控制-是否是管理员
+ */
+function authIsAdmin(){
+    $OJ_NAME = "AQNUOJ";
+    $rightstr = array("administrator", "course_teacher", "normal_teacher", "user_manager", "problem_manager", "contest_manager", "notice_manager");
+    $rightstatus = array("administrator", "course_teacher", "normal_teacher", "user_manager", "problem_manager", "contest_manager", "notice_manager");
+    //初始化权限状态
+    foreach ($rightstatus as $rs){
+        $rs = false;
+    }
+
+    //得到了用户的权限信息，存在变量里。
+    $isadmin = false;
+    foreach ($rightstr as $row){
+        if (isset($_SESSION[ $OJ_NAME . '_' . $row ]) && $_SESSION[ $OJ_NAME . '_' . $row ] == true){
+            $isadmin = true;
+        }
+    }
+    return $isadmin;
+}
+
     $isAdmin = false;
     //判断当前账户的权限
+    $isAdmin = authIsAdmin();
 
-    if (isset($_SESSION[$OJ_NAME . '_administrator']) && $_SESSION[$OJ_NAME . '_administrator'] == true){
-        //如果是管理员
-        $isAdmin = true;
-    }
     if (isset($_GET['cid'])){
        $isContest = $_GET['cid'];
     }else{

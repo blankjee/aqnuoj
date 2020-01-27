@@ -4,6 +4,7 @@
 
     isLogined();
     isAdministor();
+authPageContr();
 ?>
 <!DOCTYPE html>
 <html>

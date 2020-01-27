@@ -2,6 +2,10 @@
 require_once("../includes/config.inc.php");
 require_once("../includes/my_func.inc.php");
 
+isLogined();
+isAdministor();
+authPageContr();
+
 if (!empty($_FILES['excel_file'])){
     $file_array = explode(".", $_FILES["excel_file"]["name"]);
     if ($file_array[1] == "xls" || $file_array[1] == "xlsx"){

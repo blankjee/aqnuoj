@@ -3,6 +3,7 @@
     require_once("../includes/my_func.inc.php");
     isLogined();
     isAdministor();
+authPageContr();
 ?>
 <!DOCTYPE html>
 <html>

@@ -3,9 +3,9 @@
     //require_once("../../includes/check_post_key.php");
     require_once ("../../includes/my_func.inc.php");
 
-    if(!(isset($_SESSION[$OJ_NAME.'_'.'administrator'])||isset($_SESSION[$OJ_NAME.'_'.'problem_editor']))){
+    if(!authNewsManage()){
         //如果不具有权限（高级权限&问题编辑权限），提示登录。
-        $result = ['code' => 0, 'msg' => '添加失败！您没有权限！', 'url' => '/admin/editusers.php'];
+        $result = ['code' => 0, 'msg' => '编辑失败！您没有权限！', 'url' => '/admin/editnews.php'];
         echo json_encode($result);
         return ;
     }

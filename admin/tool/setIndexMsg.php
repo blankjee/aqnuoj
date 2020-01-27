@@ -1,6 +1,14 @@
 <?php
 
     require_once('../../includes/my_func.inc.php');
+
+
+if (!authNewsManage()){
+    $result = ['code' => 0, 'msg' => '设置失败！您没有权限！', 'url' => '/admin/newslist.php'];
+    echo json_encode($result);
+    return ;
+}
+
     if(isset($_POST['msgtitle']) && isset($_POST['msgcontent'])){
         $fp1 = fopen("../../static/text/msgtitle.txt","w");
         $fp2 = fopen("../../static/text/msgcontent.txt","w");

@@ -5,6 +5,7 @@ require_once("../includes/my_func.inc.php");
 
 isLogined();
 isAdministor();
+authPageContr();
 //a:9:{s:4:"lang";s:2:"en";s:9:"auth_pass";s:32:"d41d8cd98f00b204e9800998ecf8427e";s:8:"quota_mb";i:0;s:17:"upload_ext_filter";a:0:{}s:19:"download_ext_filter";a:0:{}s:15:"error_reporting";i:1;s:7:"fm_root";s:0:"";s:17:"cookie_cache_time";i:2592000;s:7:"version";s:5:"0.9.8";}
 /*--------------------------------------------------
  | PHP FILE MANAGER

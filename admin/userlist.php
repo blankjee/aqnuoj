@@ -94,10 +94,9 @@ isAdministor();
                                                 <td><?php echo $rows['email']; ?></td>
                                                 <td><?php echo $rows['create_time']; ?></td>
                                                 <td>
-                                                    <span><a onclick="edit()"><i class="ti-pencil-alt color-success"></i></a></span>
- <span><a onclick="resetPwd('<?php echo $rows['user_id'];?>')"><i class="ti-key color-warning"></i></a></span>
-                                                    
-<span><a onclick="remove('<?php echo $rows['user_id'];?>')"><i class="ti-trash color-danger"></i> </a></span>
+<!--                                                    <span><a onclick="edit()"><i class="ti-pencil-alt color-success"></i></a></span>-->
+                                                    <span><a onclick="resetPwd('<?php echo $rows['user_id'];?>')"><i class="ti-key color-warning"></i></a></span>
+                                                    <span><a onclick="remove('<?php echo $rows['user_id'];?>')"><i class="ti-trash color-danger"></i> </a></span>
                                                 </td>
                                             </tr>
                                         <?php }?>

@@ -4,6 +4,7 @@ require_once("../includes/my_func.inc.php");
 
 isLogined();
 isAdministor();
+authPageContr();
 //function writable($path){
 //    $ret=false;
 //    $fp=fopen($path."/testifwritable.tst","w");

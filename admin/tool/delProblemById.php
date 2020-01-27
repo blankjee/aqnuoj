@@ -1,8 +1,13 @@
 <?php
 require_once("../../includes/config.inc.php");
 require_once ("../../includes/my_func.inc.php");
-?>
-<?php
+
+if(!authProblemManage()){
+    //如果不具有权限（高级权限&问题编辑权限），提示登录。
+    $result = ['code' => 0, 'msg' => '添加失败！您没有权限！', 'url' => '/admin/problemlist.php'];
+    echo json_encode($result);
+    return ;
+}
 if(function_exists('system')){
     $id=intval($_POST['id']);
 

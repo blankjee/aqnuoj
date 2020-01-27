@@ -9,4 +9,6 @@
 	$ball_color=Array('#66cccc','red','green','pink','yellow','violet','magenta','maroon','olive','chocolate');
 	$ball_name=Array('蒂芙妮蓝','红','green','pink','yellow','violet','magenta','maroon','olive','chocolate');
 	$color_theme=["default","primary","success","info","warning","danger"];
+	$rightstr = Array(["normal_teacher", "普通老师"], ["course_teacher", "任课老师"], ["administrator", "超级管理员"], ["problem_manager", "问题管理员"], ["contest_manager", "竞赛管理员"], ["notice_manager", "公告管理员"]);
+
 ?>

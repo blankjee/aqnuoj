@@ -1,9 +1,11 @@
 <?php
     require_once('../includes/config.inc.php');
     require_once("../includes/my_func.inc.php");
+    require_once("../includes/const.inc.php");
     isLogined();
     isAdministor();
-
+    global $rightstr;
+authPageContr();
 ?>
 <!DOCTYPE html>
 <html>
@@ -91,8 +93,12 @@
                                         <div class="form-group">
                                             <label>权限</label>
                                             <select class="form-control bg-ash border-none" name="rightstr">
-                                                <option value="">选择一个权限...</option>
-                                                <option value="administrator">administrator</option>
+                                                <option value="" readonly="true">选择一个权限...</option>
+                                                <?php
+                                                    foreach ($rightstr as $row){ ?>
+                                                        <option value='<?php echo $row[0];?>'><?php echo $row[1];?></option>
+                                                <?php }
+                                                ?>
                                             </select>
                                         </div>
                                     </div>

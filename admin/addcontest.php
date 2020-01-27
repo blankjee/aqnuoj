@@ -4,6 +4,8 @@
 
     isLogined();
     isAdministor();
+    //权限控制
+    authPageContr();
 ?>
 <!DOCTYPE html>
 <html>

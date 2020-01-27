@@ -3,8 +3,10 @@
     //require_once("../../includes/check_post_key.php");
     require_once ("../../includes/my_func.inc.php");
 
-    if (!isset($_POST['user_id']) || !isset($_POST['rightstr']) || $_POST['user_id'] == null || $_POST['rightstr'] == null){
-        $res = ['code' => 0, 'msg' => '添加失败！请输入内容', 'url' => "/admin/addprivilege.php"];
+    if(!authUserManage()){
+        $result = ['code' => 0, 'msg' => '添加失败！您没有权限！', 'url' => '/admin/addprivilege.php'];
+        echo json_encode($result);
+        return ;
     }else{
         $user_id = $_POST['user_id'];
         $rightstr = $_POST['rightstr'];

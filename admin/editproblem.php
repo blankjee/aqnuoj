@@ -4,6 +4,7 @@
 
     isLogined();
     isAdministor();
+authPageContr();
 
     if (!isset($_GET['id'])){
         echo "<script>alert('无此问题！');location.href='/admin/problemlist.php';</script>";

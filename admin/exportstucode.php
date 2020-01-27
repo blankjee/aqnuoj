@@ -4,6 +4,7 @@ require_once("../includes/my_func.inc.php");
 
 isLogined();
 isAdministor();
+authPageContr();
 $sql = "SELECT contest_id, title FROM contest";
 $contests = pdo_query($sql);
 

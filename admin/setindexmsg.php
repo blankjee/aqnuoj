@@ -4,6 +4,7 @@ require_once("../includes/my_func.inc.php");
 
 isLogined();
 isAdministor();
+authPageContr();
     $msgtitle = file_get_contents("../static/text/msgtitle.txt");
     $msgcontent = file_get_contents("../static/text/msgcontent.txt");
     $msgcontent = str_replace("<br />","\r\n",$msgcontent);

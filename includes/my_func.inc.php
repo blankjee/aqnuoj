@@ -241,9 +241,17 @@ function isLogined(){
 /*对用户的身份权限进行判断，是否是管理员*/
 function isAdministor(){
 	global $OJ_NAME;
-	if (!isset($_SESSION[ $OJ_NAME . '_administrator' ])){
-		echo "<script>alert('权限不够！');location.href='/home/login.php';</script>";
-	}else if ($_SESSION[ $OJ_NAME . '_administrator' ] != true){
+	$rightstr = array("administrator", "course_teacher", "normal_teacher", "user_manager", "problem_manager", "contest_manager", "notice_manager");
+
+	//得到了用户的权限信息，存在变量里。
+	$isadmin = false;
+	foreach ($rightstr as $row){
+		if (isset($_SESSION[ $OJ_NAME . '_' . $row ]) && $_SESSION[ $OJ_NAME . '_' . $row ] == true){
+			$isadmin = true;
+		}
+	}
+
+	if (!$isadmin){
 		echo "<script>alert('权限不够！');location.href='/home/login.php';</script>";
 	}
 }
@@ -276,4 +284,159 @@ function accessContest($id){
 
 }
 
-?>
+/**
+ * 权限控制-信息获取
+ * */
+function getAuth(){
+	$OJ_NAME = "AQNUOJ";
+	$rightstr = array("administrator", "course_teacher", "normal_teacher", "user_manager", "problem_manager", "contest_manager", "notice_manager");
+	$rightstatus = array(["administrator", false, "超级管理员"], ["course_teacher", false, "任课老师"], ["normal_teacher", false, "普通老师"], ["user_manager", false, "用户管理员"], ["problem_manager", false, "问题管理员"], ["contest_manager", false, "竞赛管理员"], ["notice_manager", false, "公告管理员"]);
+
+	//得到了用户的权限信息，存在变量里。
+	foreach ($rightstr as $row){
+		if (isset($_SESSION[ $OJ_NAME . '_' . $row ]) && $_SESSION[ $OJ_NAME . '_' . $row ] == true){
+			if ($row == "administrator"){
+				$rightstatus[0][1] = true;
+			}elseif ($row == "course_teacher"){
+				$rightstatus[1][1] = true;
+			}elseif ($row == "normal_teacher"){
+				$rightstatus[2][1] = true;
+			}elseif ($row == "user_manager"){
+				$rightstatus[3][1] = true;
+			}elseif ($row == "problem_manager"){
+				$rightstatus[4][1] = true;
+			}elseif ($row == "contest_manager"){
+				$rightstatus[5][1] = true;
+			}elseif ($row == "notice_manager"){
+				$rightstatus[6][1] = true;
+			}
+		}
+	}
+	return $rightstatus;
+}
+//得到当前URL的第一部分
+function getFirUrl(){
+	$url=($_SERVER['REQUEST_URI']);
+	$url=str_replace(strrchr($url, "?"),"",$url);
+	$url = substr($url,0,strrpos($url,'.'));
+	$firsturl = substr($url, stripos($url,'/'),strrpos($url,'/'));
+	return $firsturl;
+}
+//得到当前URL的第二部分
+function getSecUrl(){
+	$url=($_SERVER['REQUEST_URI']);
+	$url=str_replace(strrchr($url, "?"),"",$url);
+	$url = substr($url,0,strrpos($url,'.'));
+	$secondurl = substr($url, strrpos($url,'/'));
+	return $secondurl;
+}
+
+/**
+ * 权限控制-页面控制
+ */
+function authPageContr(){
+	$rightstatus = getAuth();
+	$firsturl = getFirUrl();
+	$secondurl = getSecUrl();
+
+	/*对一些页面进行控制访问*/
+	if ($rightstatus[0][1] == false && $rightstatus[1][1] == false && $rightstatus[2][1] == false && $rightstatus[3][1] == false &&
+		$rightstatus[4][1] == false && $rightstatus[5][1] == false && $rightstatus[6][1] == false){
+		//普通用户，所有特权都为false
+		require("../403.php");
+		exit;
+	}elseif ($rightstatus[0][1] == false && ($rightstatus[1][1] == true || $rightstatus[2][1] == true) && $rightstatus[3][1] == false &&
+		$rightstatus[4][1] == false && $rightstatus[5][1] == false && $rightstatus[6][1] == false){
+		//普通老师或任课老师
+		$action = substr($secondurl, 1,3);
+		if ($action == "add" || $action == "del" || $action == "edi" || $action == "imp" || $action == "exp" || $action == "set" || $action == "php"){
+			require("../403.php");
+			exit;
+		}
+	}elseif ($rightstatus[3][1] == true){
+		//权限中包含用户管理员
+		$model = $secondurl;
+		if (!($model == "/userlist" || $model == "/importstudent")){
+			require("../403.php");
+			exit;
+		}
+	}elseif ($rightstatus[4][1] == true){
+		//权限中包含问题管理员
+		$model = $secondurl;
+		if (!($model == "/addproblem" || $model == "/editproblem" || $model == "/importproblem" || $model == "/problem_import_xml" || $model == "/problemlist" || $model == "phpfm")){
+			require("../403.php");
+			exit;
+		}
+	}elseif ($rightstatus[5][1] == true){
+		//权限中包含竞赛管理员
+		$model = $secondurl;
+		if (!($model == "/addcontest" || $model == "/editcontest")){
+			require("../403.php");
+			exit;
+		}
+	}elseif ($rightstatus[6][1] == true){
+		//权限中包含公告管理员
+		$model = $secondurl;
+		if (!($model == "/addnews" || $model == "/editnews" || $model == "/setindexmsg")){
+			require("../403.php");
+			exit;
+		}
+	}
+}
+/**
+ * 权限控制-用户管理功能
+ * true:具有用户管理的权限
+ */
+function authUserManage(){
+	$rightstatus = getAuth();
+
+	/*对用户身份进行判断*/
+	if ($rightstatus[0][1] == true || $rightstatus[3][1] == true){
+		return true;
+	}
+	return false;
+}
+/**
+ * 权限控制-问题管理功能
+ * true:具有问题管理的权限
+ */
+function authProblemManage(){
+	$rightstatus = getAuth();
+
+	/*对用户身份进行判断*/
+	if ($rightstatus[0][1] == true || $rightstatus[4][1] == true){
+		return true;
+	}
+	return false;
+}
+/**
+ * 权限控制-竞赛管理功能
+ * true:具有竞赛管理的权限
+ */
+function authContestManage(){
+	$rightstatus = getAuth();
+
+	/*对用户身份进行判断*/
+	if ($rightstatus[0][1] == true || $rightstatus[5][1] == true){
+		return true;
+	}
+	return false;
+}
+
+/**
+ * 权限控制-公告管理功能
+ * true:具有公告管理的权限
+ */
+function authNewsManage(){
+	$rightstatus = getAuth();
+
+	/*对用户身份进行判断*/
+	if ($rightstatus[0][1] == true || $rightstatus[6][1] == true){
+		return true;
+	}
+	return false;
+}
+
+
+
+

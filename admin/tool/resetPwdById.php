@@ -3,6 +3,14 @@ require_once("../../includes/config.inc.php");
 //require_once("../../includes/check_post_key.php");
 require_once ("../../includes/my_func.inc.php");
 
+//对用户管理权限进行检测
+
+if (!authUserManage()){
+    $result = ['code' => 0, 'msg' => '重置失败！您没有权限！', 'url' => '/admin/userlist.php'];
+    echo json_encode($result);
+    return ;
+}
+
 $id = $_POST['id'];
 $url = '/admin/userlist.php';
 $password = "oj123456";

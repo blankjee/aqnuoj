@@ -4,9 +4,7 @@
     require_once ("../../includes/my_func.inc.php");
     require_once ("problem.php");
 
-
-    if(!(isset($_SESSION[$OJ_NAME.'_'.'administrator'])||isset($_SESSION[$OJ_NAME.'_'.'problem_editor']))){
-        //如果不具有权限（高级权限&问题编辑权限），提示登录。
+    if(!authProblemManage()){
         $result = ['code' => 0, 'msg' => '添加失败！您没有权限！', 'url' => '/admin/addproblem.php'];
         echo json_encode($result);
         return ;

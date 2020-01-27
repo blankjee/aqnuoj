@@ -1,9 +1,10 @@
 <?php
-require_once('../includes/config.inc.php');
-require_once("../includes/my_func.inc.php");
+    require_once('../includes/config.inc.php');
+    require_once("../includes/my_func.inc.php");
+    require_once("../includes/const.inc.php");
 
-isLogined();
-isAdministor();
+    isLogined();
+    isAdministor();
 
     /**
      * 几种种权限：管理员、题目添加者、比赛组织者、比赛参加者、代码查看者、手动判题
@@ -14,9 +15,23 @@ isAdministor();
      * 4.source_browser:代码查看者
      * 5.primary：普通用户
      * 6.http_judge：手动判题（预留）
+     * CreateTime:2019/7/15
     */
-    $sql = "SELECT * FROM privilege WHERE rightstr IN ('administrator','source_browser','contest_creator','http_judge','problem_editor')";
+
+    /**
+     * 权限已更新（2020/1/24）
+     * 几种权限：
+     *      1.普通老师：normal_teacher
+     *      2.任课老师: course_teacher
+     *      3.超级管理员: administrator
+     *      4.问题管理员: problem_manager
+     *      5.竞赛管理员: contest_manager
+     *      6.公告管理员: notice_manager
+     * CreateTime:2020/1/24
+     */
+    $sql = "SELECT * FROM privilege WHERE rightstr IN ('administrator','normal_teacher','course_teacher','problem_manager','contest_manager', 'notice_manager')";
     $result = pdo_query($sql);
+    global $rightstr;
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -35,7 +50,19 @@ isAdministor();
     <link type="text/css" rel="stylesheet" href="../static/libs/toastr/toastr.min.css"/>
     <link href="../static/libs/unix/unix.css" rel="stylesheet">
     <link href="../static/self/css/admin.css" rel="stylesheet">
+    <style type="text/css">
+        /* dataTables列内容居中 */
+        .table>tbody>tr>td{
+            text-align:center;
+        }
+
+        /* dataTables表头居中 */
+        .table>thead:first-child>tr:first-child>th{
+            text-align:center;
+        }
+    </style>
 </head>
+
 
 <body>
 
@@ -83,23 +110,45 @@ isAdministor();
                             <div class="bootstrap-data-table-panel">
                                 <div class="table-responsive">
                                     <table id="bootstrap-data-table" class="table table-striped table-bordered">
-                                        <thead>
-                                        <tr>
+                                        <thead align="center">
+                                        <tr align="center">
                                             <th class="col-md-5">用户ID</th>
                                             <th class="col-md-5">权限</th>
                                             <th class="col-md-2">操作</th>
                                         </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody align="center">
                                         <?php
-                                        foreach ($result as $k=>$rows){
-
+                                        foreach ($result as $key => $value){
                                             ?>
                                             <tr>
-                                                <td><?php echo $rows['user_id']; ?></td>
-                                                <td><?php echo $rows['rightstr']; ?></td>
+                                                <td><?php echo $value['user_id']; ?></td>
                                                 <td>
-                                                    <span><a onclick="removePrivilege(<?php echo $rows['id'];?>,<?php echo $k;?>)"><i class="ti-trash color-danger"></i> </a></span>
+
+                                                    <?php
+                                                        foreach ($rightstr as $k => $v){
+                                                            $right = $value['rightstr'];
+                                                            if ($right == $v[0]){
+                                                                if ($right == "normal_teacher")
+                                                                    echo "<span class=\"btn btn-primary\">" . $v[1] . "</span>";
+                                                                elseif ($right == "course_teacher")
+                                                                    echo "<span class=\"btn btn-dark\">" . $v[1] . "</span>";
+                                                                elseif ($right == "administrator")
+                                                                    echo "<span class=\"btn btn-danger\">" . $v[1] . "</span>";
+                                                                elseif ($right == "problem_manager")
+                                                                    echo "<span class=\"btn btn-default\">" . $v[1] . "</span>";
+                                                                elseif ($right == "contest_manager")
+                                                                    echo "<span class=\"btn btn-info\">" . $v[1] . "</span>";
+                                                                elseif ($right == "notice_manager")
+                                                                    echo "<span class=\"btn btn-warning\">" . $v[1] . "</span>";
+                                                            }
+                                                        }
+                                                    ?>
+                                                </td>
+                                                </td>
+<!--                                                <td>--><?php //echo $rows['rightstr']; ?><!--</td>-->
+                                                <td>
+                                                    <span><a onclick="removePrivilege(<?php echo $value['id'];?>,<?php echo $k;?>)"><i class="ti-trash color-danger"></i> </a></span>
                                                 </td>
                                             </tr>
                                         <?php }?>
