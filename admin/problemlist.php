@@ -185,79 +185,14 @@ if (!$wd) {
                                         <?php } ?>
                                         </tbody>
                                     </table>
+
                                     <!-- 页码样式 -->
                                     <div class="col-sm-12">
                                         <div class="dataTables_paginate paging_simple_numbers" id="">
                                             <ul class="pagination">
-                                                <?php if ($page == 1) { ?>
-                                                    <li class="paginate_button previous disabled"
-                                                        id="bootstrap-data-table_previous"><a
-                                                                href="javascript:return false;"
-                                                                aria-controls="bootstrap-data-table"
-                                                                data-dt-idx="0" tabindex="0">首页</a>
-                                                    </li>
-                                                    <li class="paginate_button previous disabled"
-                                                        id="bootstrap-data-table_previous"><a
-                                                                href="javascript:return false;"
-                                                                aria-controls="bootstrap-data-table"
-                                                                data-dt-idx="<?php echo $page - 1; ?>"
-                                                                tabindex="0">上一页</a>
-                                                    </li>
-                                                    <?php
-                                                } else {
-                                                    ?>
-                                                    <li class="paginate_button previous"
-                                                        id="bootstrap-data-table_previous"><a
-                                                                href="/admin/problemlist.php?wd=<?php echo $wd;?>&page=1"
-                                                                aria-controls="bootstrap-data-table"
-                                                                data-dt-idx="0" tabindex="0">首页</a>
-                                                    </li>
-                                                    <li class="paginate_button previous"
-                                                        id="bootstrap-data-table_previous"><a
-                                                                href="/admin/problemlist.php?wd=<?php echo $wd;?>&page=<?php echo $page - 1; ?>"
-                                                                aria-controls="bootstrap-data-table"
-                                                                data-dt-idx="<?php echo $page - 1; ?>"
-                                                                tabindex="0">上一页</a>
-                                                    </li>
-                                                <?php } ?>
-                                                <?php for ($i = 1; $i <= $total_page; $i++) {
-                                                    ?>
-                                                    <li <?php if ($page == $i) { ?> class="paginate_button active"<?php } ?>>
-                                                        <a href="/admin/problemlist.php?wd=<?php echo $wd;?>&page=<?php echo $i; ?>"
-                                                           aria-controls="bootstrap-data-table"
-                                                           data-dt-idx="<?php echo $i; ?>"
-                                                           tabindex="0"><?php echo $i; ?></a>
-                                                    </li>
-                                                    <?php
-                                                }
+                                                <?php
+                                                    echo pageLink($page, $total_num, $each_page, 9, "");
                                                 ?>
-                                                <?php if ($page == $total_page) { ?>
-                                                    <li class="paginate_button next disabled"
-                                                        id="bootstrap-data-table_next"><a
-                                                                href="javascript:return false;"
-                                                                aria-controls="bootstrap-data-table"
-                                                                data-dt-idx="<?php echo $page + 1; ?>"
-                                                                tabindex="0">下一页</a></li>
-                                                    <li class="paginate_button next disabled"
-                                                        id="bootstrap-data-table_next"><a
-                                                                href="javascript:return false;"
-                                                                aria-controls="bootstrap-data-table"
-                                                                data-dt-idx="<?php echo $total_page; ?>"
-                                                                tabindex="0">尾页</a></li>
-                                                    <?php
-                                                } else {
-                                                    ?>
-                                                    <li class="paginate_button next" id="bootstrap-data-table_next"><a
-                                                                href="/admin/problemlist.php?wd=<?php echo $wd;?>&page=<?php echo $page + 1; ?>"
-                                                                aria-controls="bootstrap-data-table"
-                                                                data-dt-idx="<?php echo $page + 1; ?>"
-                                                                tabindex="0">下一页</a></li>
-                                                    <li class="paginate_button next" id="bootstrap-data-table_next"><a
-                                                                href="/admin/problemlist.php?wd=<?php echo $wd;?>&page=<?php echo $total_page; ?>"
-                                                                aria-controls="bootstrap-data-table"
-                                                                data-dt-idx="<?php echo $total_page; ?>"
-                                                                tabindex="0">尾页</a></li>
-                                                <?php } ?>
                                             </ul>
                                         </div>
                                     </div>
