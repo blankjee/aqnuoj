@@ -11,7 +11,7 @@
     <meta name="author" content="">
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
-    <title>500 - Internal Server Error</title>
+    <title>403 - Authority Limited</title>
     <!-- Bootstrap Core CSS -->
     <link href="/static/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
@@ -26,7 +26,7 @@
         <div class="error-box">
             <div class="error-body text-center">
                 <h1>403</h1>
-                <h3 class="text-uppercase">Forbidden !</h3>
+                <h3 class="text-uppercase">Authority Limited !</h3>
                 <p class="text-muted m-t-30 m-b-30">抱歉，您当前身份无权限访问此页面~</p>
                 <a href="/" class="btn btn-info btn-rounded waves-effect waves-light m-b-40">返回主页</a> </div>
             <!-- Footer START -->
