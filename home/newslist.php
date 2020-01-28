@@ -34,18 +34,18 @@ if (!$title){
     $total_num = (int)$result[0][0];
     $total_page = ceil($total_num / $each_page);
     //查询用户列表，按 AC 数递减排序
-    $sql = "SELECT * FROM news ORDER BY importance DESC, create_time DESC LIMIT $start, $each_page";
+    $sql = "SELECT * FROM news WHERE `defunct`='N'ORDER BY importance DESC, create_time DESC LIMIT $start, $each_page";
     $result = pdo_query($sql);
 }else {
     //有搜索字段，执行搜索操作，模糊搜索
     //获取总页数
-    $sql = "SELECT COUNT(*) FROM news WHERE title LIKE '%$title%'";
+    $sql = "SELECT COUNT(*) FROM news WHERE `defunct`='N' AND title LIKE '%$title%'";
 
     $result = pdo_query($sql);
     $total_num = (int)$result[0][0];
     $total_page = ceil($total_num / $each_page);
     //查询搜索的用户列表
-    $sql = "SELECT * FROM news WHERE title LIKE '%$title%' ORDER BY importance DESC, create_time DESC LIMIT $start, $each_page";
+    $sql = "SELECT * FROM news WHERE `defunct`='N' AND title LIKE '%$title%' ORDER BY importance DESC, create_time DESC LIMIT $start, $each_page";
 
     $result = pdo_query($sql);
 }
