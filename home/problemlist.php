@@ -279,15 +279,15 @@
                 </div>
             </div>
             <div class="row">
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered table-hover" style="font-size: small;">
                     <thead>
                     <tr>
                         <th class="col-md-1">已解决</th>
-                        <th class="col-md-5">问题</th>
+                        <th class="col-md-4">问题</th>
                         <th class="col-md-2">通过数 / 总提交数</th>
                         <th class="col-md-1">通过率</th>
                         <!--                        <th class="col-md-3">分类</th>-->
-                        <th class="col-md-3">来源</th>
+                        <th class="col-md-4">来源</th>
                     </tr>
                     </thead>
                     <tbody>
