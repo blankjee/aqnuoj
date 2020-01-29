@@ -11,7 +11,7 @@
                 <span id="dt"></span>
                 <br/>
                 <span>Copyright © 2019-2020 安庆师范大学计算机与信息学院. All Rights Reserved.</span>
-               <span><br/>Power By <a href="https://github.com/HUANGoJIE/aqnuoj">AQNUOJ</a>. Any problem, Please Contact Us.</span>
+               <span><br/>Power By <a href="https://github.com/blankjee/aqnuoj">AQNUOJ</a>. Any problem, Please Contact Us.</span>
             </div>
         </div>
     </div>
