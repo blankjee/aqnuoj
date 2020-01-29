@@ -16,3 +16,24 @@ Base.post = function (url, data, success, error) {
         }
     });
 };
+
+function gotopage(inputid){
+    var id = '#' + inputid;
+    page = $(id).val();
+    if (!page) {
+        page = 1;
+    }
+    var path = window.parent.location.href;
+    if (path.indexOf('page=') == -1){
+        var laststr = path.substring(path.length - 3);
+        if (laststr != 'php'){
+            path = path + ("&page=" + page);
+        } else {
+            path = path + ("?page=" + page);
+        }
+    }else{
+        path = path.replace(/&*&page=\d*$/, '&page='+page);
+        path = path.replace(/&*\?page=\d*$/, '?page='+page);
+    }
+    window.location.href = path;
+}

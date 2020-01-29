@@ -5,10 +5,48 @@ require_once("../includes/my_func.inc.php");
 isLogined();
 isAdministor();
 
-    $sql = "SELECT * FROM contest ORDER BY contest_id DESC";
+/*分页数据*/
+//获取当前页数
+if (isset($_GET['page'])) {
+    $page = $_GET["page"];
+} else {
+    $page = 1;
+}
+
+//设置每页最多显示的记录数
+$each_page = $PAGE_EACH / 2;
+
+//计算页面的开始位置
+if (!$page || $page == 1) {
+    $start = 0;
+} else {
+    $offset = $page - 1;
+    $start = ($offset * $each_page);
+}
+
+$wd = cleanParameter("get", "wd");
+
+if (!$wd) {
+    //无搜索内容
+    //获取总页数
+    $sql = "SELECT COUNT(1) FROM contest";
     $result = pdo_query($sql);
-
-
+    $total_num = (int)$result[0][0];
+    //var_dump($total_num);exit;
+    $total_page = ceil($total_num / $each_page);
+    //查询用户列表(查询出来的结果无密码字段，为了安全)
+    $sql = "SELECT contest_id, user_id, title, start_time, end_time, cat, defunct, private, langmask, type FROM contest LIMIT $start, $each_page";
+    $result = pdo_query($sql);
+} else {
+    //有搜索内容
+    $sql = "SELECT COUNT(1) FROM contest WHERE (contest_id LIKE '%$wd%' OR title LIKE '%$wd%')";
+    $result = pdo_query($sql);
+    $total_num = (int)$result[0][0];
+    $total_page = ceil($total_num / $each_page);
+    //查询用户列表
+    $sql = "SELECT contest_id, user_id, title, start_time, end_time, cat, defunct, private, langmask, type FROM contest WHERE (contest_id LIKE '%$wd%' OR title LIKE '%$wd%') LIMIT $start, $each_page";
+    $result = pdo_query($sql);
+}
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -70,7 +108,23 @@ isAdministor();
                         <div class="card alert">
                             <div class="card-header">
                                 <h4>&nbsp;</h4>
-
+                                <form action="/admin/contestlist.php" method="get">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-addon"><i
+                                                                class="glyphicon glyphicon-search"></i></span>
+                                                    <input class="form-control" type="text" placeholder="输入搜索内容..."
+                                                           name="wd">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input class="btn btn-primary btn-sm" type="submit" value="搜索"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </form>
                             </div>
                             <div class="bootstrap-data-table-panel">
                                 <div class="table-responsive">
@@ -106,6 +160,33 @@ isAdministor();
                                         <?php }?>
                                         </tbody>
                                     </table>
+                                    <!-- 页码样式 -->
+                                    <div class="col-sm-9">
+                                        <div class="dataTables_paginate paging_simple_numbers" id="">
+                                            <ul class="pagination">
+                                                <?php
+                                                echo pageLink($page, $total_num, $each_page, 9, "");
+                                                ?>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <!-- 跳转页面 -->
+                                    <div class="col-sm-3 form-inline" style="padding-top: 2.5%">
+                                        <div class="pull-right dataTables_paginate paging_simple_numbers">
+                                            <table>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="input-group input-group-sm">
+                                                            <input id="gopage" class="form-control" type="number" placeholder="页码" name="page" value="">
+                                                        </div>
+                                                        <button class="btn btn-default btn-sm" type="submit" onclick="gotopage('gopage')">Go</button>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -156,9 +237,6 @@ isAdministor();
 <script src="../static/libs/bootstrap/js/bootstrap.min.js"></script>
 <!-- bootstrap -->
 <script src="../static/self/js/admin.js"></script>
-<script src="../static/libs/data-table/datatables.min.js"></script>
-<script src="../static/libs/data-table/datatables-init.js"></script>
-
 
 <script type="text/javascript" src="../static/libs/toastr/toastr.min.js"></script>
 <script type="text/javascript" src="../static/self/js/aqnuoj.js"></script>

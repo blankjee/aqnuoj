@@ -468,14 +468,6 @@ function pageLink($page=0, $total=0, $pagesize=0, $number=10, $url='') {
 
     $s = '';
 
-//    <li class="paginate_button previous disabled"
-//                                                        id="bootstrap-data-table_previous"><a
-//                                                                href="javascript:return false;"
-//                                                                aria-controls="bootstrap-data-table"
-//                                                                data-dt-idx="0" tabindex="0">首页</a>
-//                                                    </li>
-
-
     if($page > 1) {
         $s .= '<li class="paginate_button previous" id="bootstrap-data-table_previous"> <a aria-controls="bootstrap-data-table" href="'.str_replace('{page}',1,$url).'">首页</a>';
         $s .= '<li class="paginate_button previous" id="bootstrap-data-table_previous"> <a aria-controls="bootstrap-data-table" href="'.str_replace('{page}',($page - 1),$url).'">上一页</a>';

@@ -187,7 +187,7 @@ if (!$wd) {
                                     </table>
 
                                     <!-- 页码样式 -->
-                                    <div class="col-sm-12">
+                                    <div class="col-sm-9">
                                         <div class="dataTables_paginate paging_simple_numbers" id="">
                                             <ul class="pagination">
                                                 <?php
@@ -196,7 +196,23 @@ if (!$wd) {
                                             </ul>
                                         </div>
                                     </div>
-
+                                    <!-- 跳转页面 -->
+                                    <div class="col-sm-3 form-inline" style="padding-top: 2.5%">
+                                        <div class="pull-right dataTables_paginate paging_simple_numbers">
+                                            <table>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="input-group input-group-sm">
+                                                            <input id="gopage" class="form-control" type="number" placeholder="页码" name="page" value="">
+                                                        </div>
+                                                        <button class="btn btn-default btn-sm" type="submit" onclick="gotopage('gopage')">Go</button>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
 
                                 </div>
                             </div>
@@ -268,7 +284,7 @@ if (!$wd) {
 <!-- sidebar -->
 <script src="../static/libs/bootstrap/js/bootstrap.min.js"></script>
 <!-- bootstrap -->
-<!--<script src="../static/self/js/admin.js"></script>-->
+<script src="../static/self/js/admin.js"></script>
 
 
 <script type="text/javascript" src="../static/libs/toastr/toastr.min.js"></script>

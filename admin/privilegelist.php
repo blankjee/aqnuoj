@@ -6,6 +6,50 @@
     isLogined();
     isAdministor();
 
+
+/*分页数据*/
+//获取当前页数
+if (isset($_GET['page'])) {
+    $page = $_GET["page"];
+} else {
+    $page = 1;
+}
+
+//设置每页最多显示的记录数
+$each_page = $PAGE_EACH / 2;
+
+//计算页面的开始位置
+if (!$page || $page == 1) {
+    $start = 0;
+} else {
+    $offset = $page - 1;
+    $start = ($offset * $each_page);
+}
+
+$wd = cleanParameter("get", "wd");
+
+if (!$wd) {
+    //无搜索内容
+    //获取总页数
+    $sql = "SELECT COUNT(1) FROM privilege WHERE rightstr IN ('administrator','normal_teacher','course_teacher','problem_manager','contest_manager', 'notice_manager')";
+    $result = pdo_query($sql);
+    $total_num = (int)$result[0][0];
+    //var_dump($total_num);exit;
+    $total_page = ceil($total_num / $each_page);
+    //查询权限列表
+    $sql = "SELECT * FROM privilege WHERE rightstr IN ('administrator','normal_teacher','course_teacher','problem_manager','contest_manager', 'notice_manager') ORDER BY user_id LIMIT $start, $each_page";
+    $result = pdo_query($sql);
+} else {
+    //有搜索内容
+    $sql = "SELECT COUNT(1) FROM privilege WHERE (user_id LIKE '%$wd%' OR rightstr LIKE '%$wd%') AND rightstr IN ('administrator','normal_teacher','course_teacher','problem_manager','contest_manager', 'notice_manager')";
+    $result = pdo_query($sql);
+    $total_num = (int)$result[0][0];
+    $total_page = ceil($total_num / $each_page);
+    //查询用户列表
+    $sql = "SELECT * FROM privilege WHERE (user_id LIKE '%$wd%' OR rightstr LIKE '%$wd%') AND rightstr IN ('administrator','normal_teacher','course_teacher','problem_manager','contest_manager', 'notice_manager') ORDER BY user_id LIMIT $start, $each_page";
+    $result = pdo_query($sql);
+}
+
     /**
      * 几种种权限：管理员、题目添加者、比赛组织者、比赛参加者、代码查看者、手动判题
      * 注册默认为【普通用户】，目前只开放管理员和普通用户
@@ -29,8 +73,6 @@
      *      6.公告管理员: notice_manager
      * CreateTime:2020/1/24
      */
-    $sql = "SELECT * FROM privilege WHERE rightstr IN ('administrator','normal_teacher','course_teacher','problem_manager','contest_manager', 'notice_manager')";
-    $result = pdo_query($sql);
     global $rightstr;
 
 ?>
@@ -105,7 +147,23 @@
                         <div class="card alert">
                             <div class="card-header">
                                 <h4>&nbsp;</h4>
-
+                                <form action="/admin/userlist.php" method="get">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-addon"><i
+                                                                class="glyphicon glyphicon-search"></i></span>
+                                                    <input class="form-control" type="text" placeholder="输入搜索内容..."
+                                                           name="wd">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input class="btn btn-primary btn-sm" type="submit" value="搜索"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </form>
                             </div>
                             <div class="bootstrap-data-table-panel">
                                 <div class="table-responsive">
@@ -154,6 +212,33 @@
                                         <?php }?>
                                         </tbody>
                                     </table>
+                                    <!-- 页码样式 -->
+                                    <div class="col-sm-9">
+                                        <div class="dataTables_paginate paging_simple_numbers" id="">
+                                            <ul class="pagination">
+                                                <?php
+                                                echo pageLink($page, $total_num, $each_page, 9, "");
+                                                ?>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <!-- 跳转页面 -->
+                                    <div class="col-sm-3 form-inline" style="padding-top: 2.5%">
+                                        <div class="pull-right dataTables_paginate paging_simple_numbers">
+                                            <table>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="input-group input-group-sm">
+                                                            <input id="gopage" class="form-control" type="number" placeholder="页码" name="page" value="">
+                                                        </div>
+                                                        <button class="btn btn-default btn-sm" type="submit" onclick="gotopage('gopage')">Go</button>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -202,9 +287,6 @@
 <script src="../static/libs/bootstrap/js/bootstrap.min.js"></script>
 <!-- bootstrap -->
 <script src="../static/self/js/admin.js"></script>
-<script src="../static/libs/data-table/datatables.min.js"></script>
-<script src="../static/libs/data-table/datatables-init.js"></script>
-
 
 <script type="text/javascript" src="../static/libs/toastr/toastr.min.js"></script>
 <script type="text/javascript" src="../static/self/js/aqnuoj.js"></script>

@@ -5,8 +5,49 @@ require_once("../includes/my_func.inc.php");
 isLogined();
 isAdministor();
 
-$sql = "SELECT * FROM news ORDER BY importance DESC, create_time DESC ";
-$result = pdo_query($sql);
+
+/*分页数据*/
+//获取当前页数
+if (isset($_GET['page'])) {
+    $page = $_GET["page"];
+} else {
+    $page = 1;
+}
+
+//设置每页最多显示的记录数
+$each_page = $PAGE_EACH / 2;
+
+//计算页面的开始位置
+if (!$page || $page == 1) {
+    $start = 0;
+} else {
+    $offset = $page - 1;
+    $start = ($offset * $each_page);
+}
+
+$wd = cleanParameter("get", "wd");
+
+if (!$wd) {
+    //无搜索内容
+    //获取总页数
+    $sql = "SELECT COUNT(1) FROM news";
+    $result = pdo_query($sql);
+    $total_num = (int)$result[0][0];
+    //var_dump($total_num);exit;
+    $total_page = ceil($total_num / $each_page);
+    //查询公告列表
+    $sql = "SELECT * FROM news ORDER BY importance DESC, create_time DESC LIMIT $start, $each_page";
+    $result = pdo_query($sql);
+} else {
+    //有搜索内容
+    $sql = "SELECT COUNT(1) FROM news WHERE (news_id LIKE '%$wd%' OR title LIKE '%$wd%' OR content LIKE '%$wd%')";
+    $result = pdo_query($sql);
+    $total_num = (int)$result[0][0];
+    $total_page = ceil($total_num / $each_page);
+    //查询用户列表
+    $sql = "SELECT * FROM news WHERE (news_id LIKE '%$wd%' OR title LIKE '%$wd%' OR content LIKE '%$wd%') ORDER BY importance DESC, create_time DESC LIMIT $start, $each_page";
+    $result = pdo_query($sql);
+}
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -70,7 +111,23 @@ $result = pdo_query($sql);
                         <div class="card alert">
                             <div class="card-header">
                                 <h4>&nbsp;</h4>
-
+                                <form action="/admin/newslist.php" method="get">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-addon"><i
+                                                                class="glyphicon glyphicon-search"></i></span>
+                                                    <input class="form-control" type="text" placeholder="输入搜索内容..."
+                                                           name="wd">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input class="btn btn-primary btn-sm" type="submit" value="搜索"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </form>
                             </div>
                             <div class="bootstrap-data-table-panel">
                                 <div class="table-responsive">
@@ -113,6 +170,33 @@ $result = pdo_query($sql);
                                         <?php }?>
                                         </tbody>
                                     </table>
+                                    <!-- 页码样式 -->
+                                    <div class="col-sm-9">
+                                        <div class="dataTables_paginate paging_simple_numbers" id="">
+                                            <ul class="pagination">
+                                                <?php
+                                                echo pageLink($page, $total_num, $each_page, 9, "");
+                                                ?>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <!-- 跳转页面 -->
+                                    <div class="col-sm-3 form-inline" style="padding-top: 2.5%">
+                                        <div class="pull-right dataTables_paginate paging_simple_numbers">
+                                            <table>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="input-group input-group-sm">
+                                                            <input id="gopage" class="form-control" type="number" placeholder="页码" name="page" value="">
+                                                        </div>
+                                                        <button class="btn btn-default btn-sm" type="submit" onclick="gotopage('gopage')">Go</button>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -162,155 +246,11 @@ $result = pdo_query($sql);
 <script src="../static/libs/bootstrap/js/bootstrap.min.js"></script>
 <!-- bootstrap -->
 <script src="../static/self/js/admin.js"></script>
-<script src="../static/libs/data-table/datatables.min.js"></script>
-<script src="../static/libs/data-table/datatables-init.js"></script>
 
 <script type="text/javascript" src="../static/self/js/aqnuoj.js"></script>
 <script type="text/javascript" src="../static/libs/toastr/toastr.min.js"></script>
 <script type="text/javascript" src="../static/self/js/function.js"></script>
 
-<!--删除竞赛-->
-<!--<script type="text/javascript">-->
-<!--    function remove(news_id){-->
-<!--        $('#hiddenid').val(news_id);//给会话中的隐藏属性ID赋值-->
-<!--        $('#delcfmModel').modal();-->
-<!--    }-->
-<!--    function submitRemove(contest_id) {-->
-<!--        var id=$.trim($("#hiddenid").val());//获取会话中的隐藏属性ID-->
-<!---->
-<!--        //进行异步删除，并用toaststr提示。-->
-<!--        toastr.options = {-->
-<!--            "positionClass": "toast-top-right",//弹出窗的位置-->
-<!--            "timeOut": "1000",-->
-<!--            "progressBar": "true",-->
-<!--        };-->
-<!---->
-<!--        var data = "table=news&id=" + id;-->
-<!--        Base.post("/admin/tool/delById.php", data,-->
-<!--            function (res) {-->
-<!--                if (res && res.code == 1) {-->
-<!--                    toastr.success(res.msg);-->
-<!--                    setTimeout(function() {-->
-<!--                        window.location.href = res.url;-->
-<!--                    }, 1000);-->
-<!--                } else if (res && res.code == 0) {-->
-<!--                    toastr.error(res.msg);-->
-<!--                    setTimeout(function() {-->
-<!--                        window.location.href = res.url;-->
-<!--                    }, 1000);-->
-<!--                }-->
-<!--            });-->
-<!--        return false;-->
-<!--    }-->
-<!---->
-<!--</script>-->
-<!---->
-<!--<script type="text/javascript">-->
-<!--    toastr.options = {-->
-<!--        "positionClass": "toast-top-right",//弹出窗的位置-->
-<!--        "timeOut": "500",-->
-<!--        "progressBar": "true",-->
-<!--    };-->
-<!--</script>-->
-<!---->
-<!--<script>-->
-<!--    $('body').on('click','.chk_de',function(event) {-->
-<!--        var flag;-->
-<!--        if(this.checked) {-->
-<!--            var stt=confirm("确定要屏蔽吗？");-->
-<!--            if(stt) {-->
-<!--                //修改数据库中的Defunct=Y-->
-<!--                var data = "table=news&defunct='Y'&id=" + $(this).attr("value");-->
-<!--                Base.post("/admin/tool/changeDefunct.php", data,-->
-<!--                    function (res) {-->
-<!--                        if (res && res.code == 1) {-->
-<!---->
-<!--                        } else if (res && res.code == 0) {-->
-<!--                            toastr.error(res.msg);-->
-<!--                            setTimeout(function() {-->
-<!--                                window.location.href = res.url;-->
-<!--                            }, 500);-->
-<!--                        }-->
-<!--                    });-->
-<!--                $(this).attr("checked",true);-->
-<!--                flag=1;-->
-<!--            } else {-->
-<!--                $(this).removeAttr("checked");-->
-<!--            }-->
-<!--        } else {-->
-<!--            var stt=confirm("确定要取消屏蔽吗？");-->
-<!--            if(stt) {-->
-<!--                //修改数据库中的Defunct=N-->
-<!--                var data = "table=news&defunct='N'&id=" + $(this).attr("value");-->
-<!--                Base.post("/admin/tool/changeDefunct.php", data,-->
-<!--                    function (res) {-->
-<!--                        if (res && res.code == 1) {-->
-<!---->
-<!--                        } else if (res && res.code == 0) {-->
-<!--                            toastr.error(res.msg);-->
-<!--                            setTimeout(function() {-->
-<!--                                window.location.href = res.url;-->
-<!--                            }, 500);-->
-<!--                        }-->
-<!--                    });-->
-<!--                $(this).removeAttr("checked");-->
-<!--                flag=0;-->
-<!--            } else {-->
-<!--                return false;-->
-<!--            }-->
-<!--        }-->
-<!--    });-->
-<!---->
-<!--    $('body').on('click','.chk_im',function(event) {-->
-<!--        var flag;-->
-<!--        if(this.checked) {-->
-<!--            var stt=confirm("确定要置顶吗？");-->
-<!--            if(stt) {-->
-<!--                //修改数据库中的importance=1-->
-<!--                var data = "table=news&importance='1'&id=" + $(this).attr("value");-->
-<!--                Base.post("/admin/tool/changeImportance.php", data,-->
-<!--                    function (res) {-->
-<!--                        if (res && res.code == 1) {-->
-<!---->
-<!--                        } else if (res && res.code == 0) {-->
-<!--                            toastr.error(res.msg);-->
-<!--                            setTimeout(function() {-->
-<!--                                window.location.href = res.url;-->
-<!--                            }, 500);-->
-<!--                        }-->
-<!--                    });-->
-<!--                $(this).attr("checked",true);-->
-<!--                flag=1;-->
-<!--            } else {-->
-<!--                $(this).removeAttr("checked");-->
-<!--            }-->
-<!--        } else {-->
-<!--            var stt=confirm("确定要取消置顶吗？");-->
-<!--            if(stt) {-->
-<!--                //修改数据库中的importance=0-->
-<!--                var data = "table=news&importance='0'&id=" + $(this).attr("value");-->
-<!--                Base.post("/admin/tool/changeImportance.php", data,-->
-<!--                    function (res) {-->
-<!--                        if (res && res.code == 1) {-->
-<!---->
-<!--                        } else if (res && res.code == 0) {-->
-<!--                            toastr.error(res.msg);-->
-<!--                            setTimeout(function() {-->
-<!--                                window.location.href = res.url;-->
-<!--                            }, 500);-->
-<!--                        }-->
-<!--                    });-->
-<!--                $(this).removeAttr("checked");-->
-<!--                flag=0;-->
-<!--            } else {-->
-<!--                return false;-->
-<!---->
-<!--            }-->
-<!--        }-->
-<!--    });-->
-<!--</script>-->
-
-<!-- scripit init-->
 
 </body>
 
