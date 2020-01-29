@@ -339,49 +339,52 @@ function authPageContr(){
 	$firsturl = getFirUrl();
 	$secondurl = getSecUrl();
 
+	$access = false;
+
 	/*对一些页面进行控制访问*/
-	if ($rightstatus[0][1] == false && $rightstatus[1][1] == false && $rightstatus[2][1] == false && $rightstatus[3][1] == false &&
-		$rightstatus[4][1] == false && $rightstatus[5][1] == false && $rightstatus[6][1] == false){
-		//普通用户，所有特权都为false
-		require("../403.php");
-		exit;
-	}elseif ($rightstatus[0][1] == false && ($rightstatus[1][1] == true || $rightstatus[2][1] == true) && $rightstatus[3][1] == false &&
-		$rightstatus[4][1] == false && $rightstatus[5][1] == false && $rightstatus[6][1] == false){
-		//普通老师或任课老师
-		$action = substr($secondurl, 1,3);
-		if ($action == "add" || $action == "del" || $action == "edi" || $action == "imp" || $action == "exp" || $action == "set" || $action == "php"){
-			require("../403.php");
-			exit;
-		}
-	}elseif ($rightstatus[3][1] == true){
+    if ($rightstatus[0][1] == true){
+        $access = true;
+    }
+    if ($rightstatus[0][1] == false && ($rightstatus[1][1] == true || $rightstatus[2][1] == true) && $rightstatus[3][1] == false &&
+		$rightstatus[4][1] == false && $rightstatus[5][1] == false && $rightstatus[6][1] == false) {
+        //普通老师或任课老师
+        $action = substr($secondurl, 1, 3);
+        if (!($action == "add" || $action == "del" || $action == "edi" || $action == "imp" || $action == "exp" || $action == "set" || $action == "php")) {
+            $access = true;
+        }
+    }
+    if ($rightstatus[3][1] == true){
 		//权限中包含用户管理员
 		$model = $secondurl;
-		if (!($model == "/userlist" || $model == "/importstudent")){
-			require("../403.php");
-			exit;
-		}
-	}elseif ($rightstatus[4][1] == true){
-		//权限中包含问题管理员
-		$model = $secondurl;
-		if (!($model == "/addproblem" || $model == "/editproblem" || $model == "/importproblem" || $model == "/problem_import_xml" || $model == "/problemlist" || $model == "phpfm")){
-			require("../403.php");
-			exit;
-		}
-	}elseif ($rightstatus[5][1] == true){
-		//权限中包含竞赛管理员
-		$model = $secondurl;
-		if (!($model == "/addcontest" || $model == "/editcontest")){
-			require("../403.php");
-			exit;
-		}
-	}elseif ($rightstatus[6][1] == true){
-		//权限中包含公告管理员
-		$model = $secondurl;
-		if (!($model == "/addnews" || $model == "/editnews" || $model == "/setindexmsg")){
-			require("../403.php");
-			exit;
+		if ($model == "/userlist" || $model == "/importstudent"){
+			$access = true;
 		}
 	}
+    if ($rightstatus[4][1] == true){
+		//权限中包含问题管理员
+		$model = $secondurl;
+		if ($model == "/addproblem" || $model == "/editproblem" || $model == "/importproblem" || $model == "/problem_import_xml" || $model == "/problemlist" || $model == "phpfm"){
+			$access = true;
+		}
+	}
+    if ($rightstatus[5][1] == true){
+		//权限中包含竞赛管理员
+		$model = $secondurl;
+		if ($model == "/addcontest" || $model == "/editcontest"){
+			$access = true;
+		}
+	}
+    if ($rightstatus[6][1] == true){
+		//权限中包含公告管理员
+		$model = $secondurl;
+		if ($model == "/addnews" || $model == "/editnews" || $model == "/setindexmsg"){
+			$access = true;
+		}
+	}
+    if (!$access){
+        require("../403.php");
+        exit;
+    }
 }
 /**
  * 权限控制-用户管理功能
