@@ -12,8 +12,6 @@ $rightstatus = getAuth();
     </div>
     <div class="pull-right p-r-15">
         <ul>
-
-
             <li class="header-icon dib"><!-- 暂时不要头像<img class="avatar-img" src="assets/images/avatar/1.jpg" alt="" /> --> <span class="user-avatar"><?php echo $_SESSION[$OJ_NAME . '_' . 'user_id'];?>&nbsp;<i class="ti-angle-down f-s-10"></i></span>
                 <div class="drop-down dropdown-profile">
                     <div class="dropdown-content-heading">
