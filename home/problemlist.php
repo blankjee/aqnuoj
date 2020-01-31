@@ -50,7 +50,6 @@
     }
 
     /*进入列表或者搜索页面*/
-
     //获取搜索字段，并处理。
     $title = cleanParameter("get", "title");
     $pid = cleanParameter("get", "pid");
@@ -59,15 +58,15 @@
     if (!$title && !$pid){
         //搜索字段为空，即没有执行搜索
         //获取总页数
-	 $sql = "SELECT COUNT(*) FROM problem WHERE `defunct`='N' AND `problem_id` NOT IN(
-		  SELECT  `problem_id` 
-		  FROM contest c
-		  INNER JOIN  `contest_problem` cp ON c.contest_id = cp.contest_id
-		  AND (
-			  c.`end_time` >  '$now'
-			  OR c.private =1
-		  )
-	    )";
+         $sql = "SELECT COUNT(1) FROM problem WHERE `defunct`='N' AND `problem_id` NOT IN(
+              SELECT  `problem_id` 
+              FROM contest c
+              INNER JOIN  `contest_problem` cp ON c.contest_id = cp.contest_id
+              AND (
+                  c.`end_time` >  '$now'
+                  OR c.private =1
+              )
+            )";
 
         $result = pdo_query($sql);
         $total_num = (int)$result[0][0];
@@ -95,16 +94,16 @@
     }else if ($title){
         //有搜索字段，执行搜索操作
         //获取总页数
-       // $sql = "SELECT COUNT(*) FROM problem WHERE title LIKE '%$title%'";
-	 $sql = "SELECT COUNT(*) FROM problem WHERE `title` LIKE '%$title%' AND `defunct`='N' AND `problem_id` NOT IN(
-		  SELECT  `problem_id` 
-		  FROM contest c
-		  INNER JOIN  `contest_problem` cp ON c.contest_id = cp.contest_id
-		  AND (
-			  c.`end_time` >  '$now'
-			  OR c.private =1
-		  )
-	    )";
+        // $sql = "SELECT COUNT(*) FROM problem WHERE title LIKE '%$title%'";
+         $sql = "SELECT COUNT(1) FROM problem WHERE `title` LIKE '%$title%' AND `defunct`='N' AND `problem_id` NOT IN(
+              SELECT  `problem_id` 
+              FROM contest c
+              INNER JOIN  `contest_problem` cp ON c.contest_id = cp.contest_id
+              AND (
+                  c.`end_time` >  '$now'
+                  OR c.private =1
+              )
+            )";
 
         $result = pdo_query($sql);
         $total_num = (int)$result[0][0];
@@ -116,39 +115,38 @@
         //}else{
         //    $sql = "SELECT * FROM problem WHERE title LIKE '%$title%' AND defunct = 'N' ORDER BY problem_id ASC LIMIT $start, $each_page";
         //}
-	 $sql = "SELECT * FROM problem WHERE `title` LIKE '%$title%' AND `defunct`='N' AND `problem_id` NOT IN(
-		  SELECT  `problem_id` 
-		  FROM contest c
-		  INNER JOIN  `contest_problem` cp ON c.contest_id = cp.contest_id
-		  AND (
-			  c.`end_time` >  '$now'
-			  OR c.private =1
-		  )
-	    ) ORDER BY problem_id ASC LIMIT $start, $each_page";
+         $sql = "SELECT * FROM problem WHERE `title` LIKE '%$title%' AND `defunct`='N' AND `problem_id` NOT IN(
+              SELECT  `problem_id` 
+              FROM contest c
+              INNER JOIN  `contest_problem` cp ON c.contest_id = cp.contest_id
+              AND (
+                  c.`end_time` >  '$now'
+                  OR c.private =1
+              )
+            ) ORDER BY problem_id ASC LIMIT $start, $each_page";
 
         $result = pdo_query($sql);
     }else if ($pid){
-	//判断是否存在
-         $sql = "SELECT COUNT(*) FROM problem WHERE problem_id = $pid";
-
+	    //判断是否存在
+        $sql = "SELECT COUNT(1) FROM problem WHERE problem_id = $pid";
         $result = pdo_query($sql);
         $total_num = (int)$result[0][0];
-	if ($total_num == 1){
-
-        $total_page = 1;
-        
-	 $sql = "SELECT * FROM problem WHERE `problem_id` = $pid AND `defunct`='N' AND `problem_id` NOT IN(
-		  SELECT  `problem_id` 
-		  FROM contest c
-		  INNER JOIN  `contest_problem` cp ON c.contest_id = cp.contest_id
-		  AND (
-			  c.`end_time` >  '$now'
-			  OR c.private =1
-		  )
-	    )";
-
-        $result = pdo_query($sql);
-	}
+	    if ($total_num == 1){
+            $total_page = 1;
+            $sql = "SELECT * FROM problem WHERE `problem_id` = $pid AND `defunct`='N' AND `problem_id` NOT IN(
+                  SELECT  `problem_id` 
+                  FROM contest c
+                  INNER JOIN  `contest_problem` cp ON c.contest_id = cp.contest_id
+                  AND (
+                      c.`end_time` >  '$now'
+                      OR c.private =1
+                  )
+                )";
+            $result = pdo_query($sql);
+	    }else{
+	        $total_page = 0;
+	        $result = array();
+        }
     }
 ?>
 
@@ -191,65 +189,17 @@
     <div class="main">
 
         <div class="container">
-            <div class="row block block-info">
-                <div class="col-md-6">
+            <div class="row block block-info" style="margin-bottom: 0px;">
+                <div class="col-md-2">
                     <div class="pad">
                         <div class="bootpage text-left">
                             <div class="page-box">
-                                <div class="page-list">
-                                    <?php if ($page == 1){ ?>
-                                        <a class="page-item active" href="javascript:return false;">
-                                            首页
-                                        </a>
-                                        <a class="page-item active" href="javascript:return false;">
-                                            上一页
-                                        </a>
-                                    <?php
-                                    }else {
-                                        ?>
-                                        <a class="page-item" href="/home/problemlist.php?page=1">
-                                            首页
-                                        </a>
-                                        <a class="page-item" href="/home/problemlist.php?page=<?php echo $page - 1;?>">
-                                            上一页
-                                        </a>
-                                    <?php }
-                                    ?>
 
-                                    <?php for ($i=1; $i<=$total_page; $i++){
-                                        ?>
-                                        <a <?php if ($page == $i){?> class="current btn btn-primary"<?php } ?> class="page-item" href="/home/problemlist.php?page=<?php echo $i;?>">
-                                            <?php echo $i;?>
-                                        </a>
-                                    <?php
-                                    }
-                                    ?>
-
-                                    <?php if ($page == $total_page){ ?>
-                                        <a class="page-item active" href="javascript:return false;">
-                                            下一页
-                                        </a>
-                                        <a class="page-item active" href="javascript:return false;">
-                                            尾页
-                                        </a>
-                                    <?php
-                                    }else {
-                                        ?>
-                                        <a class="page-item" href="/home/problemlist.php?page=<?php echo $page + 1;?>">
-                                            下一页
-                                        </a>
-                                        <a class="page-item"  href="/home/problemlist.php?page=<?php echo $total_page;?>">
-                                            尾页
-                                        </a>
-                                    <?php }
-                                    ?>
-
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 form-inline">
+                <div class="col-md-10 form-inline">
                     <div class="pull-right pad">
                         <table>
                             <tr>
@@ -321,53 +271,8 @@
                                 <div>
                                     <div class="page-box">
                                         <div class="page-list">
-                                            <?php if ($page == 1){ ?>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    首页
-                                                </a>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    上一页
-                                                </a>
-                                                <?php
-                                            }else {
-                                                ?>
-                                                <a class="page-item" href="/home/problemlist.php?page=1">
-                                                    首页
-                                                </a>
-                                                <a class="page-item" href="/home/problemlist.php?page=<?php echo $page - 1;?>">
-                                                    上一页
-                                                </a>
-                                            <?php }
-                                            ?>
-
-                                            <?php for ($i=1; $i<=$total_page; $i++){
-                                                ?>
-                                                <a <?php if ($page == $i){?> class="current btn btn-primary"<?php } ?> class="page-item" href="/home/problemlist.php?page=<?php echo $i;?>">
-                                                    <?php echo $i;?>
-                                                </a>
-                                                <?php
-                                            }
-                                            ?>
-
-                                            <?php if ($page == $total_page){ ?>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    下一页
-                                                </a>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    尾页
-                                                </a>
-                                                <?php
-                                            }else {
-                                                ?>
-                                                <a class="page-item" href="/home/problemlist.php?page=<?php echo $page + 1;?>">
-                                                    下一页
-                                                </a>
-                                                <a class="page-item"  href="/home/problemlist.php?page=<?php echo $total_page;?>">
-                                                    尾页
-                                                </a>
-                                            <?php }
-                                            ?>
-
+                                            <?php
+                                            echo pageLinkForFront($page, $total_num, $each_page, 9, ""); ?>
                                         </div>
                                     </div>
                                 </div>

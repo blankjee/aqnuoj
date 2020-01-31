@@ -34,23 +34,27 @@
 
     if (!$title && !$cid){
         //搜索字段为空，即没有执行搜索
-        //获取总页数
         $sql = "SELECT COUNT(*) FROM contest WHERE cat=?";
         $result = pdo_query($sql, $cat);
         $total_num = (int)$result[0][0];
         $total_page = ceil($total_num / $each_page);
-        //查询问题列表
         $sql = "SELECT * FROM contest WHERE cat = '$cat' ORDER BY contest_id ASC LIMIT $start, $each_page";
         $result = pdo_query($sql);
     }else if ($title){
-        //有搜索字段，执行搜索操作
-        //获取总页数
+        //搜索标题，模糊查询，分页处理。
         $sql = "SELECT COUNT(*) FROM contest WHERE cat = '$cat' AND title LIKE '%$title%'";
         $result = pdo_query($sql);
         $total_num = (int)$result[0][0];
         $total_page = ceil($total_num / $each_page);
-        //查询问题列表
         $sql = "SELECT * FROM contest WHERE cat = '$cat' AND title LIKE '%$title%' ORDER BY contest_id ASC LIMIT $start, $each_page";
+        $result = pdo_query($sql);
+    }else if ($cid){
+        //搜索竞赛ID，唯一标识，0或1个。
+        $sql = "SELECT COUNT(*) FROM contest WHERE cat = '$cat' AND contest_id = '$cid'";
+        $result = pdo_query($sql);
+        $total_num = (int)$result[0][0];
+        $total_page = ceil($total_num / $each_page);
+        $sql = "SELECT * FROM contest WHERE cat = '$cat' AND contest_id = '$cid'";
         $result = pdo_query($sql);
     }
 ?>
@@ -108,9 +112,10 @@
                         <table>
                             <tr>
                                 <td>
-                                    <form name="" action="/home/problemlist?title=<?php echo $title;?>" method="get">
+                                    <form name="" action="/home/contestlist.php" method="get">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-addon">标题</span>
+                                            <input type="hidden" name="cat" value="<?php echo $cat;?>">
                                             <input class="form-control" type="text" placeholder="输入您想搜索的内容..." name="title"
                                                    value="">
                                         </div>
@@ -118,10 +123,11 @@
                                     </form>
                                 </td>
                                 <td>
-                                    <form name="" action="/home/problemlist.php?pid=<?php echo $cid;?>" method="get">
+                                    <form name="" action="/home/contestlist.php" method="get">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
-                                            <input class="form-control" type="text" placeholder="竞赛&实验 ID" name="pid"
+                                            <input type="hidden" name="cat" value="<?php echo $cat;?>">
+                                            <input class="form-control" type="text" placeholder="竞赛&实验 ID" name="cid"
                                                    value="">
                                         </div>
                                         <button class="btn btn-default btn-sm" type="submit">搜索</button>
@@ -210,53 +216,8 @@
                                 <div>
                                     <div class="page-box">
                                         <div class="page-list">
-                                            <?php if ($page == 1){ ?>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    首页
-                                                </a>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    上一页
-                                                </a>
-                                                <?php
-                                            }else {
-                                                ?>
-                                                <a class="page-item" href="/home/contestlist.php?cat=<?php echo $cat;?>&page=1">
-                                                    首页
-                                                </a>
-                                                <a class="page-item" href="/home/contestlist.php?cat=<?php echo $cat;?>&page=<?php echo $page - 1;?>">
-                                                    上一页
-                                                </a>
-                                            <?php }
-                                            ?>
-
-                                            <?php for ($i=1; $i<=$total_page; $i++){
-                                                ?>
-                                                <a <?php if ($page == $i){?> class="current btn btn-primary"<?php } ?> class="page-item" href="/home/contestlist.php?cat=<?php echo $cat;?>&page=<?php echo $i;?>">
-                                                    <?php echo $i;?>
-                                                </a>
-                                                <?php
-                                            }
-                                            ?>
-
-                                            <?php if ($page == $total_page){ ?>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    下一页
-                                                </a>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    尾页
-                                                </a>
-                                                <?php
-                                            }else {
-                                                ?>
-                                                <a class="page-item" href="/home/contestlist.php?cat=<?php echo $cat;?>&page=<?php echo $page + 1;?>">
-                                                    下一页
-                                                </a>
-                                                <a class="page-item"  href="/home/contestlist.php?cat=<?php echo $cat;?>&page=<?php echo $total_page;?>">
-                                                    尾页
-                                                </a>
-                                            <?php }
-                                            ?>
-
+                                            <?php
+                                            echo pageLinkForFront($page, $total_num, $each_page, 9, ""); ?>
                                         </div>
                                     </div>
                                 </div>

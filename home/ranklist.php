@@ -2,6 +2,7 @@
     $OJ_CACHE_SHARE = false;
     $cache_time = 0;
     require_once('../includes/config.inc.php');
+    require_once('../includes/my_func.inc.php');
 
     /*分页数据*/
     //获取当前页数
@@ -11,8 +12,7 @@
         $page = 1;
     }
     //设置每页最多显示的记录数
-    //$each_page = $PAGE_EACH;
-    $each_page = 100;
+    $each_page = $PAGE_EACH;
 
     //设置每页的起始序号index
 
@@ -28,7 +28,8 @@
     $where = "user_id NOT IN ('admin')";
 
         //获取总页数，只显示前100名。
-        $total_page = 1;
+        $total_num = 100;
+        $total_page = ceil($total_num / $each_page);
         //查询用户列表，按 AC 数递减排序
         $sql = "SELECT * FROM users WHERE ".$where." ORDER BY solved DESC, pass_ratio DESC LIMIT $start, $each_page";
         $result = pdo_query($sql);
@@ -125,53 +126,8 @@
                                 <div>
                                     <div class="page-box">
                                         <div class="page-list">
-                                            <?php if ($page == 1){ ?>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    首页
-                                                </a>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    上一页
-                                                </a>
-                                                <?php
-                                            }else {
-                                                ?>
-                                                <a class="page-item" href="/home/ranklist.php?page=1">
-                                                    首页
-                                                </a>
-                                                <a class="page-item" href="/home/ranklist.php?page=<?php echo $page - 1;?>">
-                                                    上一页
-                                                </a>
-                                            <?php }
-                                            ?>
-
-                                            <?php for ($i=1; $i<=$total_page; $i++){
-                                                ?>
-                                                <a <?php if ($page == $i){?> class="current btn btn-primary"<?php } ?> class="page-item" href="/home/ranklist.php?page=<?php echo $i;?>">
-                                                    <?php echo $i;?>
-                                                </a>
-                                                <?php
-                                            }
-                                            ?>
-
-                                            <?php if ($page == $total_page){ ?>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    下一页
-                                                </a>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    尾页
-                                                </a>
-                                                <?php
-                                            }else {
-                                                ?>
-                                                <a class="page-item" href="/home/ranklist.php?page=<?php echo $page + 1;?>">
-                                                    下一页
-                                                </a>
-                                                <a class="page-item"  href="/home/ranklist.php?page=<?php echo $total_page;?>">
-                                                    尾页
-                                                </a>
-                                            <?php }
-                                            ?>
-
+                                            <?php
+                                            echo pageLinkForFront($page, $total_num, $each_page, 9, ""); ?>
                                         </div>
                                     </div>
                                 </div>

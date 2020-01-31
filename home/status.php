@@ -2,6 +2,7 @@
     $OJ_CACHE_SHARE = false;
     $cache_time = 0;
     require_once('../includes/config.inc.php');
+    require_once('../includes/my_func.inc.php');
 
     /*分页数据*/
     //获取当前页数
@@ -36,7 +37,7 @@
 
    /*进入列表或者竞赛状态列表或者搜索页面*/
     if (isset($_GET['cid']) && $_GET['cid']!=0){
-	$isContest = true;
+	    $isContest = true;
         $cid = $_GET['cid'];
         $sql = "SELECT COUNT(*) FROM solution WHERE contest_id = ? AND " . $where;
         $result = pdo_query($sql, $cid);
@@ -46,45 +47,43 @@
         $sql = "SELECT * FROM solution WHERE contest_id = ? AND ".$where. " ORDER BY in_date DESC LIMIT $start, $each_page";
         $result = pdo_query($sql, $cid);
     }else{
-
-    if (!$uid && !$pid && !$sid){
-        //搜索字段为空，即没有执行搜索
-        //获取总页数
-        $sql = "SELECT COUNT(*) FROM solution WHERE ".$where;
-        $result = pdo_query($sql);
-        $total_num = (int)$result[0][0];
-        $total_page = ceil($total_num / $each_page);
-        //查询状态列表
-        $sql = "SELECT * FROM solution WHERE ".$where." ORDER BY in_date DESC LIMIT $start, $each_page";
-        $result = pdo_query($sql);
-    }else {
-        //有搜索字段，执行搜索操作
-        //获取总页数
-        if ($sid){
-            //运行ID，唯一标识，只有一条。
-            $sql = "SELECT COUNT(*) FROM solution WHERE solution_id = '$sid' AND ".$where;
+        if (!$uid && !$pid && !$sid){
+            //搜索字段为空，即没有执行搜索
+            //获取总页数
+            $sql = "SELECT COUNT(*) FROM solution WHERE ".$where;
             $result = pdo_query($sql);
             $total_num = (int)$result[0][0];
             $total_page = ceil($total_num / $each_page);
             //查询状态列表
-            $sql = "SELECT * FROM solution WHERE solution_id = '$sid' AND ".$where." LIMIT $start, $each_page";
-        }else if ($uid){
-            $sql = "SELECT COUNT(*) FROM solution WHERE user_id = '$uid' AND ".$where;
+            $sql = "SELECT * FROM solution WHERE ".$where." ORDER BY in_date DESC LIMIT $start, $each_page";
             $result = pdo_query($sql);
-            $total_num = (int)$result[0][0];
-            $total_page = ceil($total_num / $each_page);
-            //查询问题列表
-            $sql = "SELECT * FROM solution WHERE user_id LIKE '%$uid%' AND ".$where." ORDER BY in_date DESC LIMIT $start, $each_page";
-        }else if ($pid){
-            $sql = "SELECT COUNT(*) FROM solution WHERE problem_id = '$pid' AND ".$where;
+        }else {
+            //有搜索字段，执行搜索操作
+            //获取总页数
+            if ($sid){
+                //运行ID，唯一标识，只有一条。
+                $sql = "SELECT COUNT(*) FROM solution WHERE solution_id = '$sid' AND ".$where;
+                $result = pdo_query($sql);
+                $total_num = (int)$result[0][0];
+                $total_page = ceil($total_num / $each_page);
+                $sql = "SELECT * FROM solution WHERE solution_id = '$sid' AND ".$where;
+            }else if ($uid){
+                //用户ID，模糊查询，很多条，分页处理。
+                $sql = "SELECT COUNT(*) FROM solution WHERE user_id LIKE '%$uid%' AND ".$where;
+                $result = pdo_query($sql);
+                $total_num = (int)$result[0][0];
+                $total_page = ceil($total_num / $each_page);
+                $sql = "SELECT * FROM solution WHERE user_id LIKE '%$uid%' AND ".$where." ORDER BY in_date DESC LIMIT $start, $each_page";
+            }else if ($pid){
+                //问题ID，一对多关系，很多条，分页处理。
+                $sql = "SELECT COUNT(*) FROM solution WHERE problem_id = '$pid' AND ".$where;
+                $result = pdo_query($sql);
+                $total_num = (int)$result[0][0];
+                $total_page = ceil($total_num / $each_page);
+                $sql = "SELECT * FROM solution WHERE problem_id = '$pid' AND ".$where." ORDER BY in_date DESC LIMIT $start, $each_page";
+            }
             $result = pdo_query($sql);
-            $total_num = (int)$result[0][0];
-            $total_page = ceil($total_num / $each_page);
-            //查询问题列表
-            $sql = "SELECT * FROM solution WHERE problem_id = '$pid' AND ".$where." ORDER BY in_date DESC LIMIT $start, $each_page";
         }
-        $result = pdo_query($sql);
-	}    
      }
 ?>
 
@@ -141,7 +140,7 @@
                         <table>
                             <tr>
                                 <td>
-                                    <form name="" action="/home/statussearch.php?pid=<?php echo $pid;?>" method="get">
+                                    <form name="" action="/home/status.php?pid=<?php echo $pid;?>" method="get">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-addon">题目ID</span>
                                             <input class="form-control" type="text" placeholder="题目ID..." name="pid"
@@ -151,7 +150,7 @@
                                     </form>
                                 </td>
                                 <td>
-                                    <form name="" action="/home/statussearch.php?uid=<?php echo $uid;?>" method="get">
+                                    <form name="" action="/home/status.php?uid=<?php echo $uid;?>" method="get">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
                                             <input class="form-control" type="text" placeholder="用户 ID" name="uid"
@@ -161,7 +160,7 @@
                                     </form>
                                 </td>
                                 <td>
-                                    <form name="" action="/home/statussearch.php?sid=<?php echo $sid;?>" method="get">
+                                    <form name="" action="/home/status.php?sid=<?php echo $sid;?>" method="get">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
                                             <input class="form-control" type="text" placeholder="运行 ID" name="sid"
@@ -296,90 +295,8 @@
                                 <div>
                                     <div class="page-box">
                                         <div class="page-list">
-                                            <?php if ($page == 1){ ?>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    首页
-                                                </a>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    上一页
-                                                </a>
-                                                <?php
-                                            }else {
-
-                                                ?>
-                                                <a class="page-item" href="/home/status.php?page=1">
-                                                    首页
-                                                </a>
-                                                <a class="page-item" href="/home/status.php?page=<?php echo $page - 1;?>">
-                                                    上一页
-                                                </a>
-                                            <?php 
-						}
-                                            ?>
-					    <?php
-						if($page <= 5){
-						    for($i=1; $i<=10; $i++){?>
-							<a <?php if ($page == $i){?> class="current btn btn-primary"<?php } ?> class="page-item" href="/home/status.php?page=<?php echo $i;?>">
-                                                    <?php echo $i;?>
-                                                </a>
-				            <?php   }?>
-
-							<a class="page-item">...</a>
-							<a class="page-item" href="/home/status.php?page=<?php echo $total_page;?>"><?php echo $total_page;?></a>
-					     <?php   }else if($total_page - $page <  5){?>
-
-							<a class="page-item" href="/home/status.php?page=1">1</a>
-							<a class="page-item">...</a>
-						<?php 
-						    for($i=$page-5; $i<=$total_page; $i++){?>
-							<a <?php if ($page == $i){?> class="current btn btn-primary"<?php } ?> class="page-item" href="/home/status.php?page=<?php echo $i;?>">
-                                                    	<?php echo $i;?>
-					  	<?php }
-						}else{?>
-
-							<a class="page-item" href="/home/status.php?page=1">1</a>
-							<a class="page-item">...</a>
-						<?php
-						    for ($i=$page-5; $i<=$page+5 && $i<=$total_page; $i++){
-                                                ?>
-                                                <a <?php if ($page == $i){?> class="current btn btn-primary"<?php } ?> class="page-item" href="/home/status.php?page=<?php echo $i;?>">
-                                                    <?php echo $i;?>
-                                                </a>
-                                            <?php }?>
-							<a class="page-item">...</a>
-							<a class="page-item" href="/home/status.php?page=<?php echo $total_page;?>"><?php echo $total_page;?></a>
-
-                                            <?php	}?>
-
-                                            <?php if ($page == $total_page){ ?>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    下一页
-                                                </a>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    尾页
-                                                </a>
-                                                <?php
-                                            }else {
-
-						if($uid != null){?>
-
-						  <a class="page-item" href="/home/status.php?uid=<?php echo $uid;?>&page=<?php echo $page + 1;?>">
-                                                    下一页
-                                                </a>
-                                                <a class="page-item"  href="/home/status.php?uid=<?php echo $uid;?>&page=<?php echo $total_page;?>">
-                                                    尾页
-                                                </a>
-
-					<?php	}else{?>
-                                                <a class="page-item" href="/home/status.php?page=<?php echo $page + 1;?>">
-                                                    下一页
-                                                </a>
-                                                <a class="page-item"  href="/home/status.php?page=<?php echo $total_page;?>">
-                                                    尾页
-                                                </a>
-                                            <?php } }
-                                            ?>
-
+				                        <?php
+                                            echo pageLinkForFront($page, $total_num, $each_page, 9, ""); ?>
                                         </div>
                                     </div>
                                 </div>

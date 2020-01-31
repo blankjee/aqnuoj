@@ -443,7 +443,7 @@ function authNewsManage(){
 
 
 /**
- * 返回分页链接字符串
+ * 返回分页链接字符串（后端使用）
  * @param int $page 当前页码 0或1均视为第一页
  * @param int $total 记录总数
  * @param int $pagesize 每页显示的记录数
@@ -461,6 +461,11 @@ function pageLink($page=0, $total=0, $pagesize=0, $number=10, $url='') {
     $pagesize = max(intval($pagesize),0);
     $pages = ceil($total/$pagesize);
 
+    //如果记录数为0，则提示结果是空。
+    if ($total == 0){
+        $s = "<p style='color: #F39C12'>啊哦，一条记录都没有找到~</p>";
+        return $s;
+    }
     if($pages < 2) return ;
 
     if(!$url) {
@@ -515,6 +520,86 @@ function pageLink($page=0, $total=0, $pagesize=0, $number=10, $url='') {
 
     $s .= "<li><a style='color: #00c292' class=\"total\">总数：$total </a></li>";
 
+    return $s ;
+}
+
+
+/**
+ * 返回分页链接字符串（前端使用）
+ * @param int $page 当前页码 0或1均视为第一页
+ * @param int $total 记录总数
+ * @param int $pagesize 每页显示的记录数
+ * @param int $number   每页显示的分页链接数量
+ * @param string $url   分页链接url样式，默认直接使用GET['page']传递
+ *        但针对一些特殊情况，如ajax分页，静态页分页，可能不能使用GET传递页码，需要定义url样式
+ *        其中必须包含{page}字符串，将被替换为对应的页码 如
+ *        $url = 'list_{page}.html';
+ *        $url = 'javascript:funct(a,b,{page})';
+ * @return string 分页链接HTML代码
+ */
+function pageLinkForFront($page=0, $total=0, $pagesize=0, $number=10, $url='') {
+
+    $page = max(intval($page),1);
+    $total = intval($total);
+    $pagesize = max(intval($pagesize),0);
+    $pages = ceil($total/$pagesize);
+
+    //如果记录数为0，则提示结果是空。
+    if ($total == 0){
+        $s = "<p style='color: #F39C12'>啊哦，一条记录都没有找到~</p>";
+        return $s;
+    }
+
+    if($pages < 2) return ;
+
+    if(!$url) {
+        $url = $_SERVER['SCRIPT_NAME'].'?'.$_SERVER['QUERY_STRING'];
+        $url = preg_replace('/\&*page=\d*\b/','',$url);
+        $url .= empty($_SERVER['QUERY_STRING']) ? "page={page}" : "&page={page}";
+    }
+
+    $s = '';
+
+    if($page > 1) {
+        $s .= '<a class="page-item" href="'.str_replace('{page}',1,$url).'">首页</a>';
+        $s .= '<a class="page-item" href="'.str_replace('{page}',($page - 1),$url).'">上一页</a>';
+    }else {
+        $s .= '<a class="page-item active" href="javascript:return false;">首页</a>';
+        $s .= '<a class="page-item active" href="javascript:return false;">上一页</a>';
+    }
+
+    if($number%2) {
+        $start = max($page -ceil($number/2)+1,1);
+    }else {
+        $start = max($page- intval($number/2),1);
+    }
+
+
+    $end = min($start+$number-1,$pages);
+
+    if(($end - $start) < ($number-1)) {
+        $start = max($end -$number+1, 1);
+    }
+
+
+    for($i = $start; $i <= $end; $i++) {
+        $sel = $page == $i ? 'class="current btn btn-primary"' : '';
+        $link = str_replace('{page}',$i,$url);
+        $href = $page == $i ? '' : "href=\"$link\"";
+        $s .= "<a $sel $href class='page-item'>$i</a>";
+    }
+
+    if($page < $pages) {
+        $link = str_replace('{page}',$page+1,$url);
+        $s .= "<a class=\"page-item\" href=\"$link\">下一页</a>";
+        $link = str_replace('{page}',$pages,$url);
+        $s .= "<a class=\"page-item\" href=\"$link\">尾页</a>";
+    }else {
+        $s .= " <a class=\"page-item active\" href=\"javascript:return false;\">下一页</a>";
+        $s .= "<a class=\"page-item active\" href=\"javascript:return false;\">尾页</a>";
+    }
+
+    $s .= "<a style='color: #00c292' class=\"total\">总数：$total </a>";
     return $s ;
 }
 

@@ -62,10 +62,6 @@
             $acc_arr[$row[0]]=true;
     }
 
-
-
-
-
     /*查询当前竞赛信息*/
     $sql = "SELECT * FROM contest WHERE contest_id = '$id'";
     $result = pdo_query($sql);
@@ -204,53 +200,8 @@
                                 <div>
                                     <div class="page-box">
                                         <div class="page-list">
-                                            <?php if ($page == 1){ ?>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    首页
-                                                </a>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    上一页
-                                                </a>
-                                                <?php
-                                            }else {
-                                                ?>
-                                                <a class="page-item" href="/home/contest.php?id=<?php echo $id;?>&page=1">
-                                                    首页
-                                                </a>
-                                                <a class="page-item" href="/home/contest.php?id=<?php echo $id;?>&page=<?php echo $page - 1;?>">
-                                                    上一页
-                                                </a>
-                                            <?php }
-                                            ?>
-
-                                            <?php for ($i=1; $i<=$total_page; $i++){
-                                                ?>
-                                                <a <?php if ($page == $i){?> class="current btn btn-primary"<?php } ?> class="page-item" href="/home/contest.php?id=<?php echo $id;?>&page=<?php echo $i;?>">
-                                                    <?php echo $i;?>
-                                                </a>
-                                                <?php
-                                            }
-                                            ?>
-
-                                            <?php if ($page == $total_page){ ?>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    下一页
-                                                </a>
-                                                <a class="page-item active" href="javascript:return false;">
-                                                    尾页
-                                                </a>
-                                                <?php
-                                            }else {
-                                                ?>
-                                                <a class="page-item" href="/home/contest.php?id=<?php echo $id;?>&page=<?php echo $page + 1;?>">
-                                                    下一页
-                                                </a>
-                                                <a class="page-item"  href="/home/contest.php?id=<?php echo $id;?>&page=<?php echo $total_page;?>">
-                                                    尾页
-                                                </a>
-                                            <?php }
-                                            ?>
-
+                                            <?php
+                                            echo pageLinkForFront($page, $total_num, $each_page, 9, ""); ?>
                                         </div>
                                     </div>
                                 </div>

@@ -2,6 +2,7 @@
 $OJ_CACHE_SHARE = false;
 $cache_time = 0;
 require_once('../includes/config.inc.php');
+require_once('../includes/my_func.inc.php');
 
 /*分页数据*/
 //获取当前页数
@@ -164,6 +165,45 @@ if (!$title){
                     <!-- /# row -->
 
                 </div></section>
+            <div class="row">
+                <table class="table table-bordered table-hover">
+            <tfoot>
+            <tr>
+                <td colspan="10">
+                    <div class="bootpage col-sm-9">
+                        <div>
+                            <div class="page-box">
+                                <div class="page-list">
+                                    <?php
+                                    echo pageLinkForFront($page, $total_num, $each_page, 9, ""); ?>
+                                </div>
+                            </div>
+                        </div>
+                        <script type="text/javascript">
+                            $(".bootpage div").addClass("btn-group btn-group-sm");
+                            $(".bootpage a").addClass('btn btn-default ');
+                            $(".bootpage span").addClass('btn btn-primary');
+                        </script>
+                    </div>
+                    <div class="col-sm-3 form-inline">
+                        <div class="pull-right">
+                            <table>
+
+                                <tr><td>
+                                        <form name="" action="/home/status.php?page=<?php echo $page;?>" method="get">
+                                            <div class="input-group">
+                                                <input class="form-control" type="number" placeholder="页码" name="page"
+                                                       value="">
+                                            </div>
+                                            <button class="btn btn-default btn-sm" type="submit">Go</button>
+                                        </form>
+                                    </td></tr>
+                            </table>
+
+            </tr>
+            </tfoot>
+            </table>
+            </div>
         </div>
 
     </div>
