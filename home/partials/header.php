@@ -36,12 +36,12 @@ function authIsAdmin(){
 <nav class="navbar navbar-default" role="navigation">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand" href="/">安庆师范大学OJ</a>
+            <a class="navbar-brand" href="/home/index.php">安庆师范大学OJ</a>
         </div>
 
         <div class="collapse navbar-collapse" id="navbar-collapse">
             <ul class="nav navbar-nav">
-                <li><a href="/">主页</a></li>
+                <li><a href="/home/index.php">主页</a></li>
 		<?php
                     if ($isContest != false){?>
                         <li><a href="/home/contest.php?id=<?php echo $cid;?>">问题列表</a></li>
